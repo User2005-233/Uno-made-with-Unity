@@ -1,0 +1,11 @@
+// UNO游戏网络消息定义
+// 生成命令: protoc --csharp_out=. messages.proto
+
+syntax = "proto3";
+package Uno.Messages;
+
+message WrapperType{
+    int SenderID=1
+    WrapperType type =2;
+    
+}
