@@ -170,7 +170,8 @@ public class EventManager : ModuleSingleton<EventManager>
         _eventListeners.Clear();
     }
 
-    public void AddActionListener<TEvent>(System.Action listener)where TEvent : IAction
+    // 添加动作事件监听器
+    public void AddActionListener<TEvent>(System.Action listener) where TEvent : IAction
     {
         AddActionListener(typeof(TEvent), listener);
     }

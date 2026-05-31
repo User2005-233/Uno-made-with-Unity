@@ -109,7 +109,7 @@ public class HandCardManager : MonoBehaviour
     
     void TryPlayCard(CardInfo info)
     {
-        CardInfo currentInfo = LogicManager.Instance.GetCurrentCardInfo();
+        
         
     }
     

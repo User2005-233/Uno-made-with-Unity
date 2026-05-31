@@ -53,7 +53,7 @@ public class TickTimer
         IsRunning = false;
     }
 
-    public void Skip()
+    public void Next()
     {
         TimeRemaining = Duration;
         IsRunning = true;

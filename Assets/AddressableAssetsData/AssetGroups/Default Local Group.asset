@@ -17,6 +17,11 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 7db1d6e0ff5478846a126db1cd31967e
   m_SerializeEntries:
+  - m_GUID: 11a68c9c62838c04e829115cecfd266a
+    m_Address: MainMenu.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 126fc8d6229b393429c75f37eb7c19e3
     m_Address: UNO_ALL.png
     m_ReadOnly: 0

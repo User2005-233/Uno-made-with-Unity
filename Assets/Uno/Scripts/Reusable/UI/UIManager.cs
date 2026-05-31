@@ -7,21 +7,35 @@ using UnityEngine;
 public class UIManager : ModuleSingleton<UIManager>
 
 {
-    private static Dictionary<int,PanelBase> SingletonPanels = new Dictionary<int,PanelBase>();
-    private static Dictionary<int,List<PanelBase>> PoolPanels =new Dictionary<int, List<PanelBase>>();
-    public void ShowPanel<TPanel>()where TPanel : PanelBase
+    private static Dictionary<int, PanelBase> SingletonPanels = new Dictionary<int, PanelBase>();
+    private static Dictionary<int, List<PanelBase>> PoolPanels = new Dictionary<int, List<PanelBase>>();
+
+    public void ShowPanel<TPanel>() where TPanel : PanelBase
     {
         int key = typeof(TPanel).GetHashCode();
         if (SingletonPanels.ContainsKey(key) == false)
-
         {
             return;
         }
 
         SingletonPanels[key].Show();
     }
+    
+    public void HidePanel<TPanel>() where TPanel : PanelBase
+    {
+        int key = typeof(TPanel).GetHashCode();
+        if (SingletonPanels.ContainsKey(key) == false)
+        {
+            return;
+        }
 
-    public void SwitchPanel<TPanel>()where TPanel : PanelBase
+        SingletonPanels[key].Hide();
+    }
+
+    /// <summary>
+    /// panel on/off switch
+    /// </summary>
+    public void SwitchPanel<TPanel>() where TPanel : PanelBase
     {
         int key = typeof(TPanel).GetHashCode();
         if (SingletonPanels.ContainsKey(key) == false)
@@ -44,14 +58,16 @@ public class UIManager : ModuleSingleton<UIManager>
         }
     }
 
-    public void RegisterSingletonPanel<TPanel>(PanelBase panel)where TPanel : PanelBase
+    //register panel
+    public void RegisterSingletonPanel<TPanel>(PanelBase panel) where TPanel : PanelBase
     {
         System.Type type = typeof(TPanel);
 
         RegisterSingletonPanel(type, panel);
     }
 
-    public void RegisterSingletonPanel(System.Type type,PanelBase panel)
+
+    public void RegisterSingletonPanel(System.Type type, PanelBase panel)
     {
         int key = type.GetHashCode();
         if (SingletonPanels.ContainsKey(key) == false)

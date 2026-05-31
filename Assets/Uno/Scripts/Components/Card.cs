@@ -79,9 +79,6 @@ public class Card : MonoBehaviour
     /// </summary>
 
     /// <param name="func"></param>
-    /// <param name="func"></param>
-    /// <param name="func"></param>
-    /// <param name="func"></param>
     public void SetProperties(WildFunc func)
     {
         string temp = null;
@@ -119,15 +116,6 @@ public class Card : MonoBehaviour
     /// 异步加载卡牌精灵资源
     /// </summary>
 
-    /// <param name="func"></param>
-    /// <param name="func"></param>
-    /// <param name="func"></param>
-    /// <param name="func"></param>
-
-    /// <param name="color"></param>
-    /// <param name="color"></param>
-    /// <param name="color"></param>
-    /// <param name="color"></param>
     public void SetProperties(ColorFunc func, CardColor color)
     {
         cardColor = color;
@@ -198,13 +186,6 @@ public class Card : MonoBehaviour
     /// </summary>
 
     /// <param name="color"></param>
-    /// <param name="color"></param>
-    /// <param name="color"></param>
-    /// <param name="color"></param>
-
-    /// <param name="num"></param>
-    /// <param name="num"></param>
-    /// <param name="num"></param>
     /// <param name="num"></param>
     public void SetProperties(CardColor color, int num)
     {

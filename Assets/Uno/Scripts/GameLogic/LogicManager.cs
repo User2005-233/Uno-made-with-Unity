@@ -1,18 +1,48 @@
-﻿using System.Collections;
+﻿using System;
 
 using System.Collections.Generic;
 
-using Unity.VisualScripting;
+using System.Text;
 
 using UnityEngine;
+
+using Random = UnityEngine.Random;
+
 
 public class LogicManager : MonoSingleton<LogicManager>
 
 {
+    
+    #region Variables
+    
+    //game setting variables
+
+    /// <summary>
+    /// Player code list, could be used with game loop
+    /// </summary>
+    List<int> playerCodeList = new List<int>();
+
+    //card info loading usage
+    public CardType cardType;
+    public CardColor cardColor;
+    public int cardNum = -1;
+    Color hovered = new Color(0.75f, 0.75f, 0.75f);
+    private Dictionary<int, List<CardInfo>> playerHands = new Dictionary<int, List<CardInfo>>();
+    bool isHost = true;
+    List<Card> Deck = new List<Card>();
+    List<CardInfo> CardInfoList = new List<CardInfo>();
+    Queue<CardInfo> randCardQ = new Queue<CardInfo>();
+    Sprite Sprite;
+    List<Card> cardsPool = new List<Card>();
+    protected int DeckSize = 108;
+
+
+
     //runtime variables
     CardType CurrentType = CardType.None;
     CardColor CurrentColor = CardColor.None;
     int CurrentNum = -1;
+    CardInfo currentCardInfo;
     float gameTime = 300f;
     float roundTime = 15f;
     TickTimer gameTimer;
@@ -20,170 +50,192 @@ public class LogicManager : MonoSingleton<LogicManager>
     bool isGameStart = false;
     int currentPlayerRound;
 
-    //Players data/setting variables
 
-    public Dictionary<int, bool> playerDict = new Dictionary<int, bool>();
+    //all ui assets loading presets
+
+
+
+    #endregion
+
+    //Players data/setting variables
     public List<int> playerLoop = new List<int>();
 
-    CardColor GetRandomColor()
+    //all initialization code here
+    void Awake()
     {
-        CardColor color = (CardColor)Random.Range(0, 3);
-        return color;
-
-    }
-    protected override void OnSingletonAwake()
-    {
-        EventManager.Instance.AddActionListener<InitAction>(InitCallBack);
-    }
-
-    void InitCallBack()
-    {
-
         AddListeners();
+        DeckInit();
+    }
+
+    void Start()
+    {
+        OnBootUp();
+    }
+
+    void Update()
+    {
+        if(isGameStart) GameLoop();
 
     }
+
+
+    #region Init
 
     void AddListeners()
     {
-        EventManager.Instance.AddListener<PlayerPlayCardEvent>(OnPlayCardEvent);
-        EventManager.Instance.AddActionListener<StartGameAction>(StartGameCallback);
+        // EventManager.Instance.AddListener<>();
     }
-
-    //player's play try event
-    private void OnPlayCardEvent(IEventMessage message)
+    void OnInit()
     {
-        var msg = message as PlayerPlayCardEvent;
-        if (CardAbleToPlay(msg.Card))
-        {
-            EventManager.Instance.TriggerEvent<PlayerFailPlayCardAction>();
-            roundTimer.Skip();
-        }
-    }
-
-    //check if the card able to be played
-    public bool CardAbleToPlay(CardInfo card)
-    {
-        if (card == null)
-            return false;
-
-        CardType cardType = card.type;
-
-        CardColor cardColor = card.color;
-
-        int cardNum = card.number;
-
-        // 数字卡牌规则
-        if (cardType == CardType.Number)
-        {
-            if (cardColor == CurrentColor || cardNum == CurrentNum)
-                return true;
-        }
-
-        // 万能卡牌规则
-        else if (cardType == CardType.Wild || cardType == CardType.PlusFour)
-        {
-            return true;
-        }
-
-        // 功能卡牌规则：Skip, Reverse, PlusTwo
-        else
-        {
-            if (cardColor == CurrentColor)
-                return true;
-        }
-
-        return false;
 
     }
 
-    void StartGameCallback()
+    void DeckInit()
     {
-        //start game initialization...?
-        isGameStart = true;
-        //timers set
+
+    }
+    void RuntimeInit()
+    {
         gameTimer = new TickTimer(gameTime);
         roundTimer = new TickTimer(roundTime);
-        gameTimer.OnTimerComplete += GameOver;
-        roundTimer.OnTimerComplete += NextRound;
-
-        //network synchronization
-
-
-        //
     }
 
-
-    // Update is called once per frame
-    void Update()
+    void InitiateDeck()
     {
-        //check if game started
-        if (isGameStart)
+        // 添加数字卡牌
+        for (int i = 0; i < 2; ++i)
         {
-            //regular delta time feed
-            gameTimer.Tick(Time.deltaTime);
-            roundTimer.Tick(Time.deltaTime);
-            //check if the game finish
-            if (gameTimer.IsCompleted)
+            foreach (CardColor color in Enum.GetValues(typeof(CardColor)))
             {
-                gameTimer.Reset();
-                roundTimer.Reset();
-            }
-            else
-            {
-                //check if the round end
-                if (roundTimer.IsCompleted)
+                for (int j = 1; j < 10; ++j)
                 {
-                    roundTimer.Skip();
+                    CardInfo info = new CardInfo(color, CardType.Number, j);
+
+                    CardInfoList.Add(info);
                 }
             }
         }
-    }
 
-    void NextRound()
-    {
-        if (!roundTimer.IsCompleted)
+        // 添加0点卡牌        
+        foreach (CardColor color in Enum.GetValues(typeof(CardColor)))
         {
-            roundTimer.ManualTriggerCallback();
-            roundTimer.Skip();
+            CardInfo info = new CardInfo(color, CardType.Number, 0);
+
+            CardInfoList.Add(info);
+        }
+
+        // 添加功能卡牌
+        for (int i = 0; i < 2; ++i)
+        {
+            foreach (CardColor color in Enum.GetValues(typeof(CardColor)))
+            {
+                foreach (ColorFunc func in Enum.GetValues(typeof(ColorFunc)))
+
+                {
+                    CardInfo info = new CardInfo(color, func);
+
+                    CardInfoList.Add(info);
+                }
+            }
+        }
+
+        // 添加特殊卡牌
+        for (int i = 0; i < 4; ++i)
+        {
+            foreach (WildFunc func in Enum.GetValues(typeof(WildFunc)))
+            {
+                CardInfo info = new CardInfo(func);
+
+                CardInfoList.Add(info);
+            }
         }
     }
 
-    void NextRoundLimit()
+    //initializa deck randq
+    void WashDeck()
     {
-        //play auto-selected card or draw card
-        EventManager.Instance.SendMessage(new AutoPlayEvent(currentPlayerRound));
-        //get next player started
-        currentPlayerRound = NextPlayerCode();
-        //change all visual
-        EventManager.Instance.SendMessage(new StartPlayerRoundEvent(currentPlayerRound));
-        //send net events
+        if (!isHost) return;
+
+        List<CardInfo> DeckTemp = new List<CardInfo>(CardInfoList);
+        for (int i = 0; i < DeckSize; i++)
+        {
+            int index = Random.Range(0, DeckSize - i);
+            CardInfo card = DeckTemp[index];
+
+            randCardQ.Enqueue(card);
+
+            DeckTemp.Remove(card);
+        }
+    }
+
+
+
+    #endregion
+
+    #region BootUp
+    void OnBootUp()
+    {
+        //show main panel
+        UIManager.Instance.ShowPanel<MainMenu>();
 
     }
 
-    int NextPlayerCode()
+
+
+    #endregion
+
+    #region Network
+    void StartHost()
     {
-        return 0;
+        UIManager.Instance.ShowPanel<HostPanel>();
     }
-
-    void GameOver()
+    void StartClient()
     {
-        //stop all game logic and reset all
-
-        //get all final score and print to screen
-
-        //reset all state and runtime data
         
     }
-
-
-
-    //for external use
-    public CardInfo GetCurrentCardInfo()
+    void JoinRoom()
     {
-        CardInfo toret = new CardInfo();
-        toret.type = CurrentType;
-        toret.color = CurrentColor;
-        toret.number = CurrentNum;
-        return toret;
+
     }
+    
+    #endregion
+
+
+    #region GameRuntime
+    void OnGameStart()
+    {
+        // TODO: 初始化游戏状态
+        isGameStart = true;
+        currentCardInfo = GetCurrentCardInfo();
+    }
+
+    void GameLoop()
+    {
+        gameTimer.Tick(Time.deltaTime);
+        roundTimer.Tick(Time.deltaTime);
+
+        if (gameTimer.IsCompleted)
+        {
+            // 游戏结束
+        }
+
+        if (roundTimer.IsCompleted)
+        {
+            roundTimer.Next();
+        }
+    }
+    
+    void PutRandomCard()
+    {
+        currentCardInfo = randCardQ.Dequeue();
+        
+    }
+    CardInfo GetCurrentCardInfo()
+    {
+        return currentCardInfo;
+    }
+
+    #endregion
+
+
 }

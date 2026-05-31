@@ -1,24 +1,28 @@
-﻿using System.Collections;
-
-using System.Collections.Generic;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PanelBase : MonoBehaviour
 
 {
-    public virtual void Init()
+    /// <summary>
+    /// initialize and show panel
+    /// </summary>
+    public void Init()
     {
-        InitUtil();
+        InitContent();
 
-    }   // 初始化并显示面板
-    public virtual void InitUtil()
+    }
+    /// <summary>
+    /// initialization content, override it yourself
+    /// </summary>
+    public virtual void InitContent()
     {
     }
-
-    public virtual void HideInit()
+    /// <summary>
+    /// initialize and hide panel
+    /// </summary>
+    public void HideInit()
     {
-        InitUtil();
+        InitContent();
 
         Hide();
     }
@@ -27,4 +31,11 @@ public class PanelBase : MonoBehaviour
     public virtual void Hide() { gameObject.SetActive(false); }
     public virtual void OnShow() { } // 显示时调用
     public virtual void OnHide() { } // 隐藏时调用
+    
+    
+    //if use hide init, override this method
+    protected virtual void Awake()
+    {
+        Init();
+    }
 }
