@@ -195,7 +195,7 @@ public class LogicManager : MonoSingleton<LogicManager>
     }
     void JoinRoom()
     {
-
+        UIManager.Instance.ShowPanel<RoomPanel>();
     }
     
     #endregion
@@ -224,12 +224,14 @@ public class LogicManager : MonoSingleton<LogicManager>
             roundTimer.Next();
         }
     }
-    
-    void PutRandomCard()
+
+    //put the first random card on the table
+    void Put1stRandomCard()
     {
         currentCardInfo = randCardQ.Dequeue();
-        
+
     }
+    //for handcardmanagers to evaluate
     CardInfo GetCurrentCardInfo()
     {
         return currentCardInfo;

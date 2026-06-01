@@ -5,25 +5,13 @@ public class InitAction : IAction { }
 /// <summary>
 /// 开始主机网络事件
 /// </summary>
+public class StartHostAction : IAction { }
 
-// public class StartHostNetEvent : INetEventMessage
+//host start failed
+public class StartHostFailedAction : IAction { }
 
-// {
-
-//     string IP_Addrerss;
-
-//     string IP_Port;
-
-//     public StartHostNetEvent(string iP_Addrerss, string iP_Port)
-//     {
-
-//         IP_Addrerss = iP_Addrerss;
-
-//         IP_Port = iP_Port;
-
-//     }
-
-// }
+//host start success
+public class StartHostSuccessAction : IAction { }
 
 /// <summary>
 /// 开始主机成功事件
@@ -161,4 +149,26 @@ public class TestEvent : IEventMessage
         data = d;
     }
 }
+//tell hint panel to show hint with message
+public class ShowHintEvent : IEventMessage
+{
+    public string title;
+    public string content;
 
+    public ShowHintEvent(string title, string content)
+    {
+        this.title = title;
+        this.content = content;
+    }
+}
+
+public class PlayCardFailAction : IAction { }
+
+public class LoadRoomDataEvent: IEventMessage
+{
+    //todo: add room data
+    public LoadRoomDataEvent()
+    {
+        
+    }
+}

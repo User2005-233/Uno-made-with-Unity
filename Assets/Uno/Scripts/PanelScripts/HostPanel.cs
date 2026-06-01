@@ -1,6 +1,6 @@
 
 // Host panel for network game hosting
-public class HostPanel : PanelBase
+public class HostPanel : BasePanel
 {
     public override void InitContent()
     {

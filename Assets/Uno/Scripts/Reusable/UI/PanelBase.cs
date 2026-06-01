@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Unity.VisualScripting;
+using UnityEngine;
 
-public class PanelBase : MonoBehaviour
+public class BasePanel : MonoBehaviour
 
 {
     /// <summary>
@@ -29,13 +30,27 @@ public class PanelBase : MonoBehaviour
 
     public virtual void Show() { gameObject.SetActive(true); }
     public virtual void Hide() { gameObject.SetActive(false); }
-    public virtual void OnShow() { } // 显示时调用
-    public virtual void OnHide() { } // 隐藏时调用
-    
-    
+    protected virtual void OnShow() { } // 显示时调用
+    protected virtual void OnHide() { } // 隐藏时调用
+
+
     //if use hide init, override this method
     protected virtual void Awake()
     {
         Init();
+    }
+    
+    protected virtual void OnEnable()
+    {
+        OnShow();
+    }
+
+    protected virtual void OnDisable()
+    {
+        OnHide();
+    }
+    
+    protected virtual void Update()
+    {
     }
 }

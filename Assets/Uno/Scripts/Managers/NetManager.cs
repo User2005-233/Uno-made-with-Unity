@@ -34,6 +34,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 public class NetManager : MonoSingleton<NetManager>
 
 {
+    /*
+    
+    #region Original Code
+    
     TcpClient tcpClient;
 
     NetworkStream stream;
@@ -407,6 +411,43 @@ public class NetManager : MonoSingleton<NetManager>
 
 
     }
+
+    #endregion
+
+    */
+
+    #region New Code
+
+    public void TryJoinRoom()
+    {
+        //TODO: join room code
+    }
+    
+    public void OnJoinRoomResponse()
+    {
+        //TODO: join room response code
+    }
+
+    public void TryCreateRoom()
+    {
+        //TODO: create room code
+    }
+
+    public void TryLeaveRoom()
+    {
+        //TODO: leave room code
+    }
+
+    public void TryStartGame()
+    {
+        //TODO: start game code
+    }
+    
+    
+
+    
+
+    #endregion
 
 
 }

@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 
 
 /// <summary>
-/// Í£Ö¹Ö÷»úÍøÂçÊÂ¼ş
+/// åœæ­¢ä¸»æœºç½‘ç»œäº‹ä»¶
 /// </summary>
 public class StopHostNetEvent : INetEventMessage
 
@@ -10,8 +10,8 @@ public class StopHostNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// ¿Í»§¶ËÁ¬½ÓÊÂ¼ş
-/// °üº¬¿Í»§¶ËĞÅÏ¢£º
+/// å®¢æˆ·ç«¯è¿æ¥äº‹ä»¶
+/// åŒ…å«å®¢æˆ·ç«¯ä¿¡æ¯ï¼š
 ///     playerID
 ///     nickname
 /// </summary>
@@ -31,7 +31,7 @@ public class ConnectedByClientNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// Á¬½Óµ½Ö÷»ú³É¹¦ÊÂ¼ş
+/// è¿æ¥åˆ°ä¸»æœºæˆåŠŸäº‹ä»¶
 /// </summary>
 public class ConnectionToHostAccomplished : INetEventMessage
 
@@ -39,7 +39,7 @@ public class ConnectionToHostAccomplished : INetEventMessage
 }
 
 /// <summary>
-/// Íæ¼Ò¼ÓÈëÍøÂçÊÂ¼ş
+/// ç©å®¶åŠ å…¥ç½‘ç»œäº‹ä»¶
 /// </summary>
 public class PlayerJoinedNetEvent : INetEventMessage
 
@@ -47,7 +47,7 @@ public class PlayerJoinedNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// Íæ¼ÒÍË³öÍøÂçÊÂ¼ş
+/// ç©å®¶é€€å‡ºç½‘ç»œäº‹ä»¶
 /// </summary>
 public class PlayerExitedNetEvent : INetEventMessage
 
@@ -55,7 +55,7 @@ public class PlayerExitedNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// ÓÎÏ·¿ªÊ¼ÍøÂçÊÂ¼ş
+/// æ¸¸æˆå¼€å§‹ç½‘ç»œäº‹ä»¶
 /// </summary>
 public class GameStartNetEvent : INetEventMessage
 
@@ -63,7 +63,7 @@ public class GameStartNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// ÓÎÏ·ÔİÍ£ÍøÂçÊÂ¼ş
+/// æ¸¸æˆæš‚åœç½‘ç»œäº‹ä»¶
 /// </summary>
 public class GamePauseNetEvent : INetEventMessage
 
@@ -71,7 +71,7 @@ public class GamePauseNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// ¸ü¸ÄêÇ³ÆÍ¼±êÇëÇóÍøÂçÊÂ¼ş
+/// æ›´æ”¹æ˜µç§°å›¾æ ‡è¯·æ±‚ç½‘ç»œäº‹ä»¶
 /// </summary>
 public class ChangeNickname_IconReqNetEvent : INetEventMessage
 
@@ -79,7 +79,7 @@ public class ChangeNickname_IconReqNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// ÓÎÏ·½áÊøÍøÂçÊÂ¼ş
+/// æ¸¸æˆç»“æŸç½‘ç»œäº‹ä»¶
 /// </summary>
 public class GameOverNetEvent : INetEventMessage
 
@@ -87,7 +87,7 @@ public class GameOverNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// ³õÊ¼»¯ÊÖÅÆÍøÂçÊÂ¼ş£¬°üº¬playerCodeµÈĞÅÏ¢
+/// åˆå§‹åŒ–æ‰‹ç‰Œç½‘ç»œäº‹ä»¶ï¼ŒåŒ…å«playerCodeç­‰ä¿¡æ¯
 /// </summary>
 public class InitHandCardNetEvent : INetEventMessage
 
@@ -101,7 +101,7 @@ public class InitHandCardNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// Íæ¼Ò³éÅÆÇëÇóÍøÂçÊÂ¼ş
+/// ç©å®¶æŠ½ç‰Œè¯·æ±‚ç½‘ç»œäº‹ä»¶
 /// </summary>
 public class PlayerGetCardReqNetEvent : INetEventMessage
 
@@ -109,7 +109,7 @@ public class PlayerGetCardReqNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// Íæ¼Ò¼ÓÅÆÍøÂçÊÂ¼ş
+/// ç©å®¶åŠ ç‰Œç½‘ç»œäº‹ä»¶
 /// </summary>
 public class PlayerPlusCardNetEvent : INetEventMessage
 
@@ -117,7 +117,7 @@ public class PlayerPlusCardNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// Íæ¼Ò³öÅÆÍøÂçÊÂ¼ş
+/// ç©å®¶å‡ºç‰Œç½‘ç»œäº‹ä»¶
 /// </summary>
 public class PlayerPlayCardNetEvent : INetEventMessage
 
@@ -135,7 +135,7 @@ public class PlayerPlayCardNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// Í¬²½ËùÓĞÍøÂçÊÂ¼ş
+/// åŒæ­¥æ‰€æœ‰ç½‘ç»œäº‹ä»¶
 /// </summary>
 public class SyncAllNetEvent : INetEventMessage
 
@@ -143,7 +143,7 @@ public class SyncAllNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// ³¬Ê±ÍøÂçÊÂ¼ş
+/// è¶…æ—¶ç½‘ç»œäº‹ä»¶
 /// </summary>
 public class TimeOutNetEvent : INetEventMessage
 
@@ -151,7 +151,7 @@ public class TimeOutNetEvent : INetEventMessage
 }
 
 /// <summary>
-/// Ï´ÅÆÍøÂçÊÂ¼ş
+/// æ´—ç‰Œç½‘ç»œäº‹ä»¶
 /// </summary>
 public class WashDeckNetEvent : INetEventMessage
 

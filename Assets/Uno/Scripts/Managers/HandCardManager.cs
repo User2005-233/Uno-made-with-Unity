@@ -23,15 +23,13 @@ public class HandCardManager : MonoBehaviour
 {
 
 
-    List<Card> handCard = new List<Card>();
+    readonly List<Card> handCard = new List<Card>();
     Card selected;
-
     SplineContainer handSpline;
-
     [SerializeField] float initalSpace = 1f;
-
     int PlayerCode = 0;
-
+    GameObject cardEntityParent;
+    GameObject cardVisualParent;
 
 
 
@@ -39,7 +37,9 @@ public class HandCardManager : MonoBehaviour
     void Start()
     {
         handSpline = transform.Find("HandSpline").GetComponent<SplineContainer>();
-
+        cardEntityParent = transform.Find("CardEntityParent").gameObject;
+        cardVisualParent = transform.Find("CardVisualParent").gameObject;
+        
         AddListeners();
     }
 
@@ -51,10 +51,10 @@ public class HandCardManager : MonoBehaviour
 
     void AddListeners()
     {
-        EventManager.Instance.AddListener<PlayerPlusCardEvent>(InsertHandCard);
-        EventManager.Instance.AddListener<PlayerRemoveCardEvent>(OnPlayerRemoveCardEvent);
+        
     }
 
+    //
     private void InsertHandCard(IEventMessage message)
     {
         var msg = message as PlayerPlusCardEvent;
@@ -103,8 +103,17 @@ public class HandCardManager : MonoBehaviour
             Vector3 pos = handSpline.EvaluatePosition(space);
             Vector3 rot = handSpline.EvaluateUpVector(space);
             handCard[i].SetTransform(pos);
-            handCard[i].SetRotatoin(rot);
+            handCard[i].SetRotation(rot);
         }
+    }
+    
+    public void SwapCardIndex(int index1, int index2)
+    {
+        if (index1 < 0 || index1 >= handCard.Count || index2 < 0 || index2 >= handCard.Count) return;
+        
+        (handCard[index1], handCard[index2]) = (handCard[index2], handCard[index1]);
+        
+        UpdateCardTransform();
     }
     
     void TryPlayCard(CardInfo info)

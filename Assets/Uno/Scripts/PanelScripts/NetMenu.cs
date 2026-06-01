@@ -8,7 +8,7 @@ using UnityEngine;
 
 using UnityEngine.UI;
 
-public class NetMenu : PanelBase
+public class NetMenu : BasePanel
 
 {
     Button HostBtn;

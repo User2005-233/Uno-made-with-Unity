@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8850837582990002130}
   - component: {fileID: 1096808878387911427}
   m_Layer: 0
-  m_Name: MainMenu
+  m_Name: MainPenal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,7 +27,7 @@ RectTransform:
   m_GameObject: {fileID: 418782393292344041}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 110899864915917735}
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u7F51\u7EDC\u8054\u673A\n"
+  m_text: Online Game
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15ccfdff40a188d4093e5ccf2c2b4782, type: 2}
   m_sharedMaterial: {fileID: -8209886098689614957, guid: 15ccfdff40a188d4093e5ccf2c2b4782, type: 2}
@@ -718,7 +718,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "ai\u5BF9\u6218"
+  m_text: AI Game
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15ccfdff40a188d4093e5ccf2c2b4782, type: 2}
   m_sharedMaterial: {fileID: -8209886098689614957, guid: 15ccfdff40a188d4093e5ccf2c2b4782, type: 2}
@@ -800,7 +800,7 @@ GameObject:
   - component: {fileID: 7062566846045559941}
   - component: {fileID: 2439002094711745889}
   m_Layer: 0
-  m_Name: Setting
+  m_Name: SettingBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -29,7 +29,6 @@ public class CardPoolManager : MonoBehaviour
     private static CardPoolManager instance;
 
     public static CardPoolManager Instance
-
     {
         get
         {
@@ -94,7 +93,6 @@ public class CardPoolManager : MonoBehaviour
     private void OnPrefabLoaded(AsyncOperationHandle<GameObject> handle)
     {
         if (handle.Status == AsyncOperationStatus.Succeeded)
-
         {
             cardPrefab = handle.Result;
 
@@ -103,7 +101,6 @@ public class CardPoolManager : MonoBehaviour
         }
 
         else
-
         {
             Debug.LogError($"Failed to load card prefab: {cardPrefabAddress}");
         }
@@ -126,7 +123,6 @@ public class CardPoolManager : MonoBehaviour
     private Card CreateNewCard()
     {
         if (cardPrefab == null)
-
         {
             Debug.LogWarning("Card prefab not loaded yet!");
 
@@ -140,7 +136,6 @@ public class CardPoolManager : MonoBehaviour
         Card card = cardObj.GetComponent<Card>();
 
         if (card == null)
-
         {
             Debug.LogError("Card component not found on prefab!");
 
@@ -167,23 +162,19 @@ public class CardPoolManager : MonoBehaviour
 
         // 从可用队列中获取卡牌
         if (availableCards.Count > 0)
-
         {
             card = availableCards.Dequeue();
         }
 
         else
-
         {
             // 如果池未满，创建新卡牌
             if (activeCards.Count < maxPoolSize)
-
             {
                 card = CreateNewCard();
             }
 
             else
-
             {
                 Debug.LogWarning("Card pool is full! Cannot create more cards.");
 
@@ -192,17 +183,14 @@ public class CardPoolManager : MonoBehaviour
         }
 
         if (card != null)
-
         {
             // 设置父对象
             if (parent != null)
-
             {
                 card.transform.SetParent(parent);
             }
 
             else
-
             {
                 card.transform.SetParent(null);
             }
@@ -231,7 +219,6 @@ public class CardPoolManager : MonoBehaviour
 
         // 从活跃列表中移除
         if (activeCards.Contains(card))
-
         {
             activeCards.Remove(card);
         }
@@ -258,7 +245,6 @@ public class CardPoolManager : MonoBehaviour
         if (cards == null) return;
 
         foreach (Card card in cards)
-
         {
             ReturnCard(card);
         }

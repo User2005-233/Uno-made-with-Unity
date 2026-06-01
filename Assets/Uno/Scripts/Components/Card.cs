@@ -16,7 +16,6 @@ using UnityEngine.AddressableAssets;
 
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-using UnityEngine.ResourceManagement.ResourceLocations;
 
 using DG.Tweening;
 
@@ -24,36 +23,29 @@ using DG.Tweening;
 public class Card : MonoBehaviour
 
 {
+    public CardVisual cardVisual;
     public CardType cardType;
-
     public CardColor cardColor;
-
     public int cardNum = -1;
-
     public CardInfo cardInfo;
-
     bool inHand = false;
-
+    bool onDrag = false;
     SpriteRenderer spriteRenderer;
-
     Color hovered = new Color(0.75f, 0.75f, 0.75f);
-
     string unoAllSprite = "UNO_ALL.png";
-
     StringBuilder sb = new StringBuilder();
-
     Sprite cardSprite = null;
-
+    public GameObject cardVisualPrefab;
     Vector3 position = Vector3.zero;
-
     Vector3 rotation = Vector3.zero;
 
     private void Awake()
     {
-        spriteRenderer = transform.GetComponent<SpriteRenderer>();
+        cardVisual = Instantiate(cardVisualPrefab).GetComponent<CardVisual>();
+        spriteRenderer = cardVisual.spriteRenderer;
+        
 
         if (cardSprite != null)
-
         {
             spriteRenderer.sprite = cardSprite;
         }
@@ -64,10 +56,7 @@ public class Card : MonoBehaviour
     {
     }
 
-    public void ColorHovered()
-    {
-        spriteRenderer.color = hovered;
-    }
+
 
     public void ColorReset()
     {
@@ -86,7 +75,6 @@ public class Card : MonoBehaviour
         sb.Append(unoAllSprite);
 
         switch (func)
-
         {
             case WildFunc.PlusFour:
                 cardType = CardType.PlusFour;
@@ -296,7 +284,7 @@ public class Card : MonoBehaviour
         transform.DOMove(position, 0.2f).SetEase(Ease.InOutQuad);
     }
 
-    public void SetRotatoin(Vector3 rot)
+    public void SetRotation(Vector3 rot)
     {
         rotation = rot;
 

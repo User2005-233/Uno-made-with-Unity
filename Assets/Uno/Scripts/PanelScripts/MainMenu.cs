@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenu : PanelBase
+public class MainMenu : BasePanel
 
 {
     [SerializeField] private Button netGameBtn;
@@ -27,20 +27,26 @@ public class MainMenu : PanelBase
     private void OnNetGameButtonClicked()
     {
         // TODO: Start net game
+        UIManager.Instance.ShowPanel<NetMenu>();
+        Hide();
     }
 
     private void OnQuitButtonClicked()
     {
         // TODO: Quit game
+        Application.Quit();
     }
 
     private void OnAiGameButtonClicked()
     {
         // TODO: Start AI game
+        
     }
 
     private void OnSettingsButtonClicked()
     {
         // TODO: Open settings
+        UIManager.Instance.ShowPanel<SettingsPanel>();
+        Hide();
     }
 }

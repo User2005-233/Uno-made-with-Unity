@@ -92,7 +92,6 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoSingleton<T
             }
 
             else if (_instance != this)
-
             {
                 // 销毁重复实例
                 Debug.LogWarning($"[MonoSingleton] Duplicate instance of {typeof(T)} found. Destroying duplicate.");

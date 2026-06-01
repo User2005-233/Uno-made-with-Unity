@@ -24,7 +24,8 @@ public class PlayerEntity : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        mainCamera=transform.Find("Main Camera").GetComponent<Camera>();
+        mainCamera = transform.Find("Main Camera").GetComponent<Camera>();
+        if(!isHost) mainCamera.enabled = false;
     }
 
     // Update is called once per frame
@@ -90,7 +91,6 @@ public class PlayerEntity : MonoBehaviour
 
             lastHoveredCard = lastHoveredObj.GetComponent<Card>();
 
-            lastHoveredCard.ColorHovered();
         }
     }
 }

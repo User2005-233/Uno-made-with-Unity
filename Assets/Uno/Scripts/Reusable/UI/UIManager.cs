@@ -7,10 +7,10 @@ using UnityEngine;
 public class UIManager : ModuleSingleton<UIManager>
 
 {
-    private static Dictionary<int, PanelBase> SingletonPanels = new Dictionary<int, PanelBase>();
-    private static Dictionary<int, List<PanelBase>> PoolPanels = new Dictionary<int, List<PanelBase>>();
+    private static Dictionary<int, BasePanel> SingletonPanels = new Dictionary<int, BasePanel>();
+    private static Dictionary<int, List<BasePanel>> PoolPanels = new Dictionary<int, List<BasePanel>>();
 
-    public void ShowPanel<TPanel>() where TPanel : PanelBase
+    public void ShowPanel<TPanel>() where TPanel : BasePanel
     {
         int key = typeof(TPanel).GetHashCode();
         if (SingletonPanels.ContainsKey(key) == false)
@@ -21,7 +21,7 @@ public class UIManager : ModuleSingleton<UIManager>
         SingletonPanels[key].Show();
     }
     
-    public void HidePanel<TPanel>() where TPanel : PanelBase
+    public void HidePanel<TPanel>() where TPanel : BasePanel
     {
         int key = typeof(TPanel).GetHashCode();
         if (SingletonPanels.ContainsKey(key) == false)
@@ -35,7 +35,7 @@ public class UIManager : ModuleSingleton<UIManager>
     /// <summary>
     /// panel on/off switch
     /// </summary>
-    public void SwitchPanel<TPanel>() where TPanel : PanelBase
+    public void SwitchPanel<TPanel>() where TPanel : BasePanel
     {
         int key = typeof(TPanel).GetHashCode();
         if (SingletonPanels.ContainsKey(key) == false)
@@ -59,7 +59,7 @@ public class UIManager : ModuleSingleton<UIManager>
     }
 
     //register panel
-    public void RegisterSingletonPanel<TPanel>(PanelBase panel) where TPanel : PanelBase
+    public void RegisterSingletonPanel<TPanel>(BasePanel panel) where TPanel : BasePanel
     {
         System.Type type = typeof(TPanel);
 
@@ -67,7 +67,7 @@ public class UIManager : ModuleSingleton<UIManager>
     }
 
 
-    public void RegisterSingletonPanel(System.Type type, PanelBase panel)
+    public void RegisterSingletonPanel(System.Type type, BasePanel panel)
     {
         int key = type.GetHashCode();
         if (SingletonPanels.ContainsKey(key) == false)
