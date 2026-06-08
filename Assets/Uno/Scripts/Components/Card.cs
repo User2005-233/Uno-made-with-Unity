@@ -23,7 +23,6 @@ using DG.Tweening;
 public class Card : MonoBehaviour
 
 {
-    public CardVisual cardVisual;
     public CardType cardType;
     public CardColor cardColor;
     public int cardNum = -1;
@@ -31,43 +30,118 @@ public class Card : MonoBehaviour
     bool inHand = false;
     bool onDrag = false;
     SpriteRenderer spriteRenderer;
-    Color hovered = new Color(0.75f, 0.75f, 0.75f);
-    string unoAllSprite = "UNO_ALL.png";
-    StringBuilder sb = new StringBuilder();
+    readonly Color hovered = new Color(0.75f, 0.75f, 0.75f);
+    readonly string unoAllSprite = "UNO_ALL.png";
+    readonly StringBuilder sb = new StringBuilder();
     Sprite cardSprite = null;
     public GameObject cardVisualPrefab;
     Vector3 position = Vector3.zero;
     Vector3 rotation = Vector3.zero;
+    Vector3 currentVelocity;
+    public float smoothingTime = 0.2f;
+    private float zCoord;
+    public HandCardManager manager;
 
     private void Awake()
     {
-        cardVisual = Instantiate(cardVisualPrefab).GetComponent<CardVisual>();
-        spriteRenderer = cardVisual.spriteRenderer;
-        
-
+        spriteRenderer = transform.GetComponent<SpriteRenderer>();
         if (cardSprite != null)
         {
             spriteRenderer.sprite = cardSprite;
         }
     }
 
-    // Update is called once per frame
+    #region Card Movement
+    //TODO: implement smooth follow the mouse movement if draged
     void Update()
     {
+        if (inHand)
+        {
+            if (onDrag) OnDrag();
+            else OnDragEnd();
+        }
     }
 
+    void OnMouseDown()
+    {
+        onDrag = true;
+    }
+    void OnMouseUp()
+    {
+        onDrag = false;
+    }
+    void OnMouseOver()
+    {
+        spriteRenderer.color = hovered;
+    }
+    void OnMouseExit()
+    {
+        spriteRenderer.color = Color.white;
+    }
+    
+    
+    void OnDrag()
+    {
+        Vector3 mousePosition = GetMouseWorldPos();
+        mousePosition.z = zCoord;
 
+        transform.position = Vector3.SmoothDamp(
+                    transform.position,
+                    mousePosition,
+                    ref currentVelocity,
+                    smoothingTime,
+                    Mathf.Infinity,
+                    Time.deltaTime
+                );
 
+        //check if reached target
+        if (Vector3.Distance(transform.position, mousePosition) < 0.01f)
+        {
+            transform.position = mousePosition;
+        }
+    }
+    void OnDragEnd()
+    {
+        transform.position = Vector3.SmoothDamp(
+                    transform.position,
+                    position,
+                    ref currentVelocity,
+                    smoothingTime,
+                    Mathf.Infinity,
+                    Time.deltaTime
+                );
+        if (Vector3.Distance(transform.position, position) < 0.01f)
+        {
+            transform.position = position;
+        }
+    }
+    //TODO: implement tilt when dragged, receive velocity from mouse movement
+    void LagRotation()
+    {
+        
+    }
+
+    private Vector3 GetMouseWorldPos()
+    {
+        // Pixel coordinates of mouse (x, y)
+        Vector3 mousePoint = Input.mousePosition;
+
+        // Depth coordinate (z) of the object
+        mousePoint.z = zCoord;
+
+        // Convert to world space
+        return Camera.main.ScreenToWorldPoint(mousePoint);
+    }
+    
+    #endregion
+
+    #region Sprite Code
     public void ColorReset()
     {
         spriteRenderer.color = Color.white;
     }
 
-    /// <summary>
-    /// 设置卡牌的点击回调函数
-    /// </summary>
-
-    /// <param name="func"></param>
+    //multiple set sprite functions
     public void SetProperties(WildFunc func)
     {
         string temp = null;
@@ -77,7 +151,7 @@ public class Card : MonoBehaviour
         switch (func)
         {
             case WildFunc.PlusFour:
-                cardType = CardType.PlusFour;
+                cardType = CardType.WildDrawFour;
 
                 temp = "[UNO_ALL_54]";
 
@@ -99,82 +173,49 @@ public class Card : MonoBehaviour
         string path = sb.ToString();
         Addressables.LoadAssetAsync<Sprite>(path).Completed += Card_Completed;
     }
-
-    /// <summary>
-    /// 异步加载卡牌精灵资源
-    /// </summary>
-
     public void SetProperties(ColorFunc func, CardColor color)
     {
         cardColor = color;
-
         int spriteIndex = 0;
-
         switch (color)
-
         {
             case CardColor.red:
                 spriteIndex = 40;
-
                 break;
-
             case CardColor.yellow:
                 spriteIndex = 43;
-
                 break;
-
             case CardColor.green:
                 spriteIndex = 46;
-
                 break;
-
             case CardColor.blue:
                 spriteIndex = 49;
-
                 break;
         }
 
         switch (func)
-
         {
             case ColorFunc.Skip:
                 cardType = CardType.Skip;
-
                 break;
-
             case ColorFunc.Reverse:
                 cardType = CardType.Reverse;
-
                 spriteIndex += 1;
-
                 break;
-
             case ColorFunc.PlusTwo:
                 cardType = CardType.PlusTwo;
-
                 spriteIndex += 2;
-
                 break;
         }
 
         sb.Append(unoAllSprite);
-
         sb.Append("[UNO_ALL_");
-
         sb.Append(spriteIndex.ToString());
-
         sb.Append("]");
-
         string path = sb.ToString();
         Addressables.LoadAssetAsync<Sprite>(path).Completed += Card_Completed;
+        inHand = true;
     }
-
-    /// <summary>
-    /// 设置卡牌的颜色效果
-    /// </summary>
-
-    /// <param name="color"></param>
-    /// <param name="num"></param>
     public void SetProperties(CardColor color, int num)
     {
         cardType = CardType.Number;
@@ -186,44 +227,30 @@ public class Card : MonoBehaviour
         int spriteIndex = 0;
 
         switch (color)
-
         {
             case CardColor.red:
                 spriteIndex = 0;
-
                 break;
-
             case CardColor.yellow:
                 spriteIndex = 10;
-
                 break;
-
             case CardColor.green:
                 spriteIndex = 20;
-
                 break;
-
             case CardColor.blue:
                 spriteIndex = 30;
-
                 break;
-
             default:
                 break;
         }
-
         spriteIndex += ((num - 1 + 10) % 10);
-
         sb.Append(unoAllSprite);
-
         sb.Append("[UNO_ALL_");
-
         sb.Append(spriteIndex.ToString());
-
         sb.Append("]");
-
         string path = sb.ToString();
         Addressables.LoadAssetAsync<Sprite>(path).Completed += Card_Completed;
+        inHand = true;
     }
 
     // 改变卡牌属性
@@ -257,7 +284,7 @@ public class Card : MonoBehaviour
 
                 break;
 
-            case CardType.PlusFour:
+            case CardType.WildDrawFour:
                 SetProperties(WildFunc.PlusFour);
 
                 break;
@@ -277,23 +304,18 @@ public class Card : MonoBehaviour
         }
     }
 
+    #endregion
+
+
+    #region Card Transform presets
     public void SetTransform(Vector3 pos)
     {
         position = pos;
-
-        transform.DOMove(position, 0.2f).SetEase(Ease.InOutQuad);
     }
 
     public void SetRotation(Vector3 rot)
     {
         rotation = rot;
-
-        transform.DORotate(rotation, 0.2f).SetEase(Ease.InOutQuad);
-    }
-
-    public void BackToPosition()
-    {
-        transform.DOMove(position, 0.2f).SetEase(Ease.InOutQuad);
     }
 
     private void Card_Completed(AsyncOperationHandle<Sprite> obj)
@@ -301,9 +323,10 @@ public class Card : MonoBehaviour
         cardSprite = obj.Result;
 
         if (spriteRenderer != null)
-
         {
             spriteRenderer.sprite = cardSprite;
         }
     }
+    
+    #endregion
 }

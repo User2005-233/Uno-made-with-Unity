@@ -8,7 +8,7 @@ build simple ui panels {start:2026-06-01T11:30:56}
 
 implement all ui event calls
 
-implement all game logic
+-[ ] implement all game logic
 
 
 

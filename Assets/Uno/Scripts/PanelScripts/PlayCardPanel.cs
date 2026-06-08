@@ -20,7 +20,7 @@ public class PlayCardPane : BasePanel
 
     public override void InitContent()
     {
-        UIManager.Instance.RegisterSingletonPanel<PlayCardPane>(this);
+        UIManager.Instance.RegisterPanel<PlayCardPane>(this);
         playCardRegion = transform.Find("PlayCardRegion").GetComponent<Image>();
         playCardRegion.color = offRegionColor;
         playCardText = playCardRegion.transform.Find("PlayHint").GetComponent<TextMeshProUGUI>();
@@ -28,7 +28,10 @@ public class PlayCardPane : BasePanel
         hideTimer = new TickTimer(0.5f);
         hideTimer.OnTimerComplete += OnTimeUp;
     }
-
+    protected override void Awake()
+    {
+        HideInit();
+    }
     protected override void OnShow()
     {
         base.OnShow();

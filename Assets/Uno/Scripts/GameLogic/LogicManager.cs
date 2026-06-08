@@ -17,10 +17,7 @@ public class LogicManager : MonoSingleton<LogicManager>
     
     //game setting variables
 
-    /// <summary>
-    /// Player code list, could be used with game loop
-    /// </summary>
-    List<int> playerCodeList = new List<int>();
+
 
     //card info loading usage
     public CardType cardType;
@@ -32,9 +29,8 @@ public class LogicManager : MonoSingleton<LogicManager>
     List<Card> Deck = new List<Card>();
     List<CardInfo> CardInfoList = new List<CardInfo>();
     Queue<CardInfo> randCardQ = new Queue<CardInfo>();
-    Sprite Sprite;
-    List<Card> cardsPool = new List<Card>();
     protected int DeckSize = 108;
+    GameObject PlayerParent;
 
 
 
@@ -61,8 +57,10 @@ public class LogicManager : MonoSingleton<LogicManager>
     public List<int> playerLoop = new List<int>();
 
     //all initialization code here
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        PlayerParent = GameObject.FindWithTag("Player");
         AddListeners();
         DeckInit();
     }
@@ -83,8 +81,43 @@ public class LogicManager : MonoSingleton<LogicManager>
 
     void AddListeners()
     {
-        // EventManager.Instance.AddListener<>();
+        EventManager.Instance.AddNetListener<PlayerJoinedMessage>(OnPlayerJoined);
+        EventManager.Instance.AddNetListener<PlayerLeftMessage>(OnPlayerLeft);
     }
+    
+    void OnPlayerJoined(INetEventMessage message)
+    {
+        //1.check if i am host
+        //2.if host, update player loop and send to all clients
+        //3.if not host, do nothing(for now)
+
+        //4.when at in-game state, dynamicly move the host to the next player
+        
+        //and maybe some network error handling?
+        var msg = (PlayerJoinedMessage)message;
+        if(isHost)
+        {
+            playerLoop.Add(msg.ClientId);
+            EventManager.Instance.SendMessage(new AddPlayerItem(msg.PlayerName));
+        }
+        else
+        {
+        }
+    }
+
+    void OnPlayerLeft(INetEventMessage message)
+    {
+        var msg = (PlayerLeftMessage)message;
+        if(isHost)
+        {
+            playerLoop.Remove(msg.ClientId);
+            //EventManager.Instance.SendMessage(new RemovePlayerItem(msg.ClientId));
+        }
+        else
+        {
+        }
+    }
+    
     void OnInit()
     {
 
@@ -168,7 +201,7 @@ public class LogicManager : MonoSingleton<LogicManager>
         }
     }
 
-
+    
 
     #endregion
 
@@ -176,29 +209,11 @@ public class LogicManager : MonoSingleton<LogicManager>
     void OnBootUp()
     {
         //show main panel
-        UIManager.Instance.ShowPanel<MainMenu>();
+        UIManager.Instance.ShowPanel<MainMenuPanel>();
 
     }
-
-
-
     #endregion
 
-    #region Network
-    void StartHost()
-    {
-        UIManager.Instance.ShowPanel<HostPanel>();
-    }
-    void StartClient()
-    {
-        
-    }
-    void JoinRoom()
-    {
-        UIManager.Instance.ShowPanel<RoomPanel>();
-    }
-    
-    #endregion
 
 
     #region GameRuntime
@@ -207,6 +222,16 @@ public class LogicManager : MonoSingleton<LogicManager>
         // TODO: 初始化游戏状态
         isGameStart = true;
         currentCardInfo = GetCurrentCardInfo();
+
+    }
+    void DealCards()
+    {
+        // TODO: 发牌逻辑
+        for (int i = 0; i < playerLoop.Count; i++)
+        {
+            //extract multiple cards from randomq
+            //send cards to players using network
+        }
     }
 
     void GameLoop()
@@ -224,6 +249,8 @@ public class LogicManager : MonoSingleton<LogicManager>
             roundTimer.Next();
         }
     }
+    
+    
 
     //put the first random card on the table
     void Put1stRandomCard()
@@ -231,10 +258,37 @@ public class LogicManager : MonoSingleton<LogicManager>
         currentCardInfo = randCardQ.Dequeue();
 
     }
-    //for handcardmanagers to evaluate
     CardInfo GetCurrentCardInfo()
     {
         return currentCardInfo;
+    }
+    void PlayCardSuccess(CardInfo card)
+    {
+        //TODO: changes after played card
+        if (card.type == CardType.Wild || card.type == CardType.WildDrawFour)
+        {
+            
+        }
+        if (card.type == currentCardInfo.type || card.color == currentCardInfo.color || card.number == currentCardInfo.number)
+        {
+            
+        }
+    }
+    void SetCurrentCardInfo(CardInfo cardInfo)
+    {
+        currentCardInfo = cardInfo;
+    }
+    bool CheckPlayable(CardInfo card)
+    {
+        if(card.type == CardType.Wild || card.type == CardType.WildDrawFour)
+        {
+            return true;
+        }
+        if(card.type == currentCardInfo.type || card.color == currentCardInfo.color || card.number == currentCardInfo.number)
+        {
+            return true;
+        }
+        return false;
     }
 
     #endregion

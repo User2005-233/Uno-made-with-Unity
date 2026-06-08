@@ -11,7 +11,7 @@ public class HintMenu : BasePanel
     TickTimer hideTimer;
     public override void InitContent()
     {
-        UIManager.Instance.RegisterSingletonPanel<HintMenu>(this);
+        UIManager.Instance.RegisterPanel<HintMenu>(this);
         hintTitle = transform.Find("Frame/Title").GetComponent<TextMeshProUGUI>();
         hintContent = transform.Find("Frame/Content").GetComponent<TextMeshProUGUI>();
         EventManager.Instance.AddListener<ShowHintEvent>(OnShowHint);
@@ -33,6 +33,12 @@ public class HintMenu : BasePanel
         hintTitle.text = title;
         hintContent.text = content;
     }
+
+    protected override void Awake()
+    {
+        HideInit();
+    }
+
 
 
     protected override void Update()

@@ -41,30 +41,12 @@ public enum CardType
     Skip = 1,
     Reverse = 2,
     PlusTwo = 3,
-    PlusFour=4,
+    WildDrawFour=4,
     Wild=5,
     Number=6,
 }
 
-//public enum Color { Red, Yellow, Blue, Green, Wild }
 
-//public enum Type { Number, Skip, Reverse, PlusTwo, Wild, PlusFour }
-
-public enum WrapperType
-
-{
-    Heartbeat = 0,
-    ConnectReq = 1,
-    DisconnectReq = 2,
-    ChangeNickname_IconReq = 3,
-    PlayCardReq = 4,
-    PlusCardReq = 5,
-    GuessCardReq = 6,
-    SyncReq = 7,
-    EmojiReq = 8,
-    TransferHostReq = 9,
-    
-}
 
 [System.Serializable]
 public class CardInfo
@@ -122,7 +104,7 @@ public class CardInfo
 
         {
             case WildFunc.PlusFour:
-                this.type = CardType.PlusFour;
+                this.type = CardType.WildDrawFour;
 
                 break;
 
@@ -145,11 +127,25 @@ public class CardInfo
         number = -1;
     }
 
+    public CardInfo(int cardID)
+    {
+        color = (CardColor)(cardID / 100);
+        type =  (CardType)((cardID%100) / 10);
+        number = cardID % 10;
+    }
+
     public bool Campare(CardInfo info)
     {
         if (info.color == this.color && info.number == this.number && info.type == this.type)
             return true;
         return false;
     }
+
+    public int GetCardID()
+    {
+        return (int)color * 100 + (int)type * 10 + number;
+    }
+
+    
 }
 

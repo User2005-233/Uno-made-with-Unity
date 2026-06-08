@@ -4,7 +4,7 @@ public class HostPanel : BasePanel
 {
     public override void InitContent()
     {
-        UIManager.Instance.RegisterSingletonPanel<HostPanel>(this);
+        UIManager.Instance.RegisterPanel<HostPanel>(this);
         
     }
 

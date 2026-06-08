@@ -1,4 +1,5 @@
-using UnityEngine.UIElements;
+using UnityEngine.UI;
+
 
 public class SettingsPanel : BasePanel
 {
@@ -7,13 +8,18 @@ public class SettingsPanel : BasePanel
     
     public override void InitContent()
     {
-        UIManager.Instance.RegisterSingletonPanel<SettingsPanel>(this);
+        UIManager.Instance.RegisterPanel<SettingsPanel>(this);
         backButton = transform.Find("BackBtn").GetComponent<Button>();
-        backButton.clicked += OnBackButtonClicked;
+        backButton.onClick.AddListener(OnBackButtonClicked);
+    }
+    protected override void Awake()
+    {
+        HideInit();
     }
     
     private void OnBackButtonClicked()
     {
+        UIManager.Instance.ShowPanel<MainMenuPanel>();
         Hide();
     }
     

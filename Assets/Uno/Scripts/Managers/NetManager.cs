@@ -1,35 +1,12 @@
-﻿using System.Net.NetworkInformation;
-
-using System.Net.Sockets;
-
-using System.Net;
-
-using System.Collections.Generic;
-
-using System;
-
-using PimDeWitte.UnityMainThreadDispatcher;
-
-using Unity.Mathematics;
-
+﻿
+using FishNet;
+using FishNet.Connection;
+using FishNet.Managing;
+using FishNet.Managing.Observing;
+using FishNet.Object;
+using FishNet.Transporting;
 using UnityEngine;
 
-using System.Diagnostics;
-
-using System.Threading;
-
-using System.Text;
-
-using System.Linq;
-
-using System.Reflection;
-
-using System.IO;
-
-using System.Runtime.Serialization.Formatters.Binary;
-//using Mono.Cecil.Cil;
-
-//using Google.Protobuf;
 
 public class NetManager : MonoSingleton<NetManager>
 
@@ -418,33 +395,76 @@ public class NetManager : MonoSingleton<NetManager>
 
     #region New Code
 
-    public void TryJoinRoom()
+    private NetworkManager _networkManager;
+    private void Awake()
     {
-        //TODO: join room code
+        _networkManager = GetComponent<NetworkManager>();
+        AddListoners();
     }
+
+
     
-    public void OnJoinRoomResponse()
+    private void AddListoners()
     {
-        //TODO: join room response code
+        // TODO: 添加事件监听
     }
 
-    public void TryCreateRoom()
+    private void OnEnable()
     {
-        //TODO: create room code
+        // 订阅 FishNet 底层的连接变动事件
+        if (_networkManager != null)
+        {
+            // 服务器端监听：有任何远程客户端连接/断开
+            _networkManager.ServerManager.OnRemoteConnectionState += OnServerRemoteConnectionStateChanged;
+            
+            // 客户端端监听：当其他客户端连接/断开（注意：需要在 NetworkManager 的 ServerManager 组件中勾选 "Share Ids"）
+            _networkManager.ClientManager.OnRemoteConnectionState += OnClientRemoteConnectionStateChanged;
+        }
     }
 
-    public void TryLeaveRoom()
+    private void OnDisable()
     {
-        //TODO: leave room code
+        if (_networkManager != null)
+        {
+            _networkManager.ServerManager.OnRemoteConnectionState -= OnServerRemoteConnectionStateChanged;
+            _networkManager.ClientManager.OnRemoteConnectionState -= OnClientRemoteConnectionStateChanged;
+        }
     }
 
-    public void TryStartGame()
+    private void OnServerRemoteConnectionStateChanged(NetworkConnection conn, RemoteConnectionStateArgs args)
     {
-        //TODO: start game code
+        if (args.ConnectionState == RemoteConnectionState.Started)
+        {
+            Debug.Log($"[服务器] 玩家 {conn.ClientId} 加入了服务器");
+            
+            PlayerJoinedMessage msg = new PlayerJoinedMessage(conn.ClientId, $"Player_{conn.ClientId}");
+            EventManager.Instance.SendNetMessage(msg);
+        }
+        else if (args.ConnectionState == RemoteConnectionState.Stopped)
+        {
+            Debug.Log($"[服务器] 玩家 {conn.ClientId} 离开了服务器");
+            
+            PlayerLeftMessage msg = new PlayerLeftMessage(conn.ClientId);
+            EventManager.Instance.SendNetMessage(msg);
+        }
     }
-    
-    
+    private void OnClientRemoteConnectionStateChanged(RemoteConnectionStateArgs args)
+    {
+        if (args.ConnectionState == RemoteConnectionState.Started)
+        {
+            Debug.Log($"[客户端] 广播：别的玩家 {args.ConnectionId} 加入了游戏");
 
+            PlayerJoinedMessage msg = new PlayerJoinedMessage(args.ConnectionId, $"Player_{args.ConnectionId}");
+            EventManager.Instance.SendNetMessage(msg);
+        }
+        else if (args.ConnectionState == RemoteConnectionState.Stopped)
+        {
+            Debug.Log($"[客户端] 广播：别的玩家 {args.ConnectionId} 离开了游戏");
+
+            PlayerLeftMessage msg = new PlayerLeftMessage(args.ConnectionId);
+            EventManager.Instance.SendNetMessage(msg);
+        }
+    }
     
 
     #endregion

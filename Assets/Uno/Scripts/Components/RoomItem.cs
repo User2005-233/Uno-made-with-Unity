@@ -46,7 +46,6 @@ public class RoomItem : MonoBehaviour
     void OnJoinButtonClicked()
     {
         //TODO: send join room message with room data
-        
-        NetManager.Instance.TryJoinRoom();
+
     }
 }

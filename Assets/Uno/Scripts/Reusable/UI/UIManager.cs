@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 
-using System.Security.Cryptography;
-
 using UnityEngine;
 
-public class UIManager : ModuleSingleton<UIManager>
-
+public class UIManager : MonoSingleton<UIManager>
 {
     private static Dictionary<int, BasePanel> SingletonPanels = new Dictionary<int, BasePanel>();
     private static Dictionary<int, List<BasePanel>> PoolPanels = new Dictionary<int, List<BasePanel>>();
@@ -59,15 +56,15 @@ public class UIManager : ModuleSingleton<UIManager>
     }
 
     //register panel
-    public void RegisterSingletonPanel<TPanel>(BasePanel panel) where TPanel : BasePanel
+    public void RegisterPanel<TPanel>(BasePanel panel) where TPanel : BasePanel
     {
         System.Type type = typeof(TPanel);
 
-        RegisterSingletonPanel(type, panel);
+        RegisterPanel(type, panel);
     }
 
 
-    public void RegisterSingletonPanel(System.Type type, BasePanel panel)
+    public void RegisterPanel(System.Type type, BasePanel panel)
     {
         int key = type.GetHashCode();
         if (SingletonPanels.ContainsKey(key) == false)
@@ -76,5 +73,16 @@ public class UIManager : ModuleSingleton<UIManager>
 
             Debug.Log($"hashcode: {key},panel: {panel.name},has been added to register");
         }
+    }
+
+    public bool CheckPanelShowState<TPanel>() where TPanel : BasePanel
+    {
+        int key = typeof(TPanel).GetHashCode();
+        if (SingletonPanels.ContainsKey(key) == false)
+        {
+            return false;
+        }
+
+        return SingletonPanels[key].isActiveAndEnabled;
     }
 }

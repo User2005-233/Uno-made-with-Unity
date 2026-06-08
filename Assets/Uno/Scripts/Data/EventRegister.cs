@@ -1,45 +1,15 @@
 ﻿using System.Collections.Generic;
 
-public class InitAction : IAction { }
-
-/// <summary>
-/// 开始主机网络事件
-/// </summary>
-public class StartHostAction : IAction { }
-
-//host start failed
-public class StartHostFailedAction : IAction { }
-
-//host start success
-public class StartHostSuccessAction : IAction { }
-
-/// <summary>
-/// 开始主机成功事件
-/// </summary>
-public class StartHostSucceededAction : IAction { }
-
-//start game action
-public class StartGameAction : IAction { }
-
-/// <summary>
-/// 玩家抽牌请求事件
-/// </summary>
-public class PlayerGetCardReqEvent : IEventMessage
-
-{
-}
 
 
 /// <summary>
 /// 玩家加牌事件
 /// </summary>
-public class PlayerPlusCardEvent : IEventMessage
+public struct PlayerPlusCardEvent : IEventMessage
 
 {
     public Card card;
-
     public int playerCode;
-
     public PlayerPlusCardEvent(int code, Card cardIn)
     {
         playerCode = code;
@@ -52,13 +22,11 @@ public class PlayerPlusCardEvent : IEventMessage
 /// <summary>
 /// 玩家出牌事件
 /// </summary>
-public class PlayerPlayCardEvent : IEventMessage
+public struct PlayerPlayCardEvent : IEventMessage
 
 {
     public CardInfo Card;
-
     public int Code;
-
     public PlayerPlayCardEvent(int code, CardInfo card)
     {
         Code = code;
@@ -67,15 +35,12 @@ public class PlayerPlayCardEvent : IEventMessage
     }
 }
 
-/// <summary>
-/// 玩家出牌失败事件
-/// </summary>
-public class PlayerFailPlayCardAction : IAction { }
+
 
 /// <summary>
 /// 时间截至自动出牌
 /// </summary>
-public class AutoPlayEvent : IEventMessage
+public struct AutoPlayEvent : IEventMessage
 {
     int code;
     public AutoPlayEvent(int code)
@@ -87,7 +52,7 @@ public class AutoPlayEvent : IEventMessage
 /// <summary>
 /// 开始下一玩家的出牌
 /// </summary>
-public class StartPlayerRoundEvent : IEventMessage
+public struct StartPlayerRoundEvent : IEventMessage
 {
     int code;
     public StartPlayerRoundEvent(int code)
@@ -99,12 +64,10 @@ public class StartPlayerRoundEvent : IEventMessage
 /// <summary>
 /// 玩家移除牌事件
 /// </summary>
-public class PlayerRemoveCardEvent : IEventMessage
+public struct PlayerRemoveCardEvent : IEventMessage
 {
     public CardInfo Card;
-
     public int Code;
-
     public PlayerRemoveCardEvent(int code, CardInfo card)
     {
         Code = code;
@@ -113,48 +76,25 @@ public class PlayerRemoveCardEvent : IEventMessage
     }
 }
 
-/// <summary>
-/// 同步所有事件
-/// </summary>
-public class SyncAllEvent : IEventMessage
 
-{
-}
-
-/// <summary>
-/// 超时事件
-/// </summary>
-public class TimeOutEvent : IEventMessage
-
-{
-}
-
-/// <summary>
-/// 洗牌事件
-/// </summary>
-public class WashDeckEvent : IEventMessage
-
-{
-}
 
 /// <summary>
 /// 测试
 /// </summary>
-public class TestEvent : IEventMessage
+public struct TestEvent : IEventMessage
 {
     public int data;
-
     public TestEvent(int d)
     {
         data = d;
     }
 }
+
 //tell hint panel to show hint with message
-public class ShowHintEvent : IEventMessage
+public struct ShowHintEvent : IEventMessage
 {
     public string title;
     public string content;
-
     public ShowHintEvent(string title, string content)
     {
         this.title = title;
@@ -164,11 +104,23 @@ public class ShowHintEvent : IEventMessage
 
 public class PlayCardFailAction : IAction { }
 
-public class LoadRoomDataEvent: IEventMessage
+public struct LoadRoomDataEvent: IEventMessage
 {
     //todo: add room data
-    public LoadRoomDataEvent()
+    public readonly string roomName;
+    public readonly Dictionary<int, string> playerList;
+    public LoadRoomDataEvent(string roomName, Dictionary<int, string> playerList)
     {
-        
+        this.roomName = roomName;
+        this.playerList = playerList;
+    }
+}
+
+public struct AddPlayerItem :IEventMessage
+{
+    string str;
+    public AddPlayerItem(string str)
+    {
+        this.str = str;
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -13,32 +11,29 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using System;
 
 using DG.Tweening;
-using System.Linq.Expressions;
+using System.Linq;
 
 /// <summary>
 /// Visual Manager
 /// </summary>
 public class HandCardManager : MonoBehaviour
-
 {
-
-
-    readonly List<Card> handCard = new List<Card>();
+    List<Card> handCard = new List<Card>();
+    List<Vector3> cardPositions = new List<Vector3>();
+    List<Vector3> cardRotations = new List<Vector3>();
     Card selected;
     SplineContainer handSpline;
     [SerializeField] float initalSpace = 1f;
     int PlayerCode = 0;
-    GameObject cardEntityParent;
-    GameObject cardVisualParent;
 
-
+    void Awake()
+    {
+        handSpline = transform.Find("HandSpline").GetComponent<SplineContainer>();
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        handSpline = transform.Find("HandSpline").GetComponent<SplineContainer>();
-        cardEntityParent = transform.Find("CardEntityParent").gameObject;
-        cardVisualParent = transform.Find("CardVisualParent").gameObject;
         
         AddListeners();
     }
@@ -46,80 +41,73 @@ public class HandCardManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //iterate the full hand card to see if card position need to be swaped
         
     }
+    
 
     void AddListeners()
     {
         
     }
 
-    //
-    private void InsertHandCard(IEventMessage message)
+
+
+    public void InsertHandCard(Card card)
     {
-        var msg = message as PlayerPlusCardEvent;
-
-        if (msg != null)
-        {
-            if (PlayerCode == msg.playerCode)
-            {
-                Card card = msg.card;
-                handCard.Add(card);
-                card.transform.parent = handSpline.transform;
-
-                Debug.Log("Card Received!");
-
-                UpdateCardTransform();
-            }
-        }
+        handCard.Add(card);
+        card.transform.parent = handSpline.transform;
+        Debug.Log("Card Received!");
+    }
+    
+    public void RemoveHandCard(Card card)
+    {
+        handCard.Remove(card);
+        UpdateCardTransform();
     }
 
-    void OnPlayerRemoveCardEvent(IEventMessage message)
-    {
-        var msg = message as PlayerRemoveCardEvent;
 
-        if (msg.Code != PlayerCode) return;
-
-        foreach (var item in handCard)
-        {
-            if (item.cardInfo.Campare(msg.Card))
-            {
-                
-            }
-        }
-        
-    }
-
-    //temp function: update all 
+    //temp function: update all transform settings
     void UpdateCardTransform()
     {
         if (handCard.Count == 0) return;
 
         int count = handCard.Count;
+        cardPositions.Clear();
+        cardRotations.Clear();
 
         for (int i = 0; i < count; i++)
         {
             float space = (i + 0.5f) / count;
             Vector3 pos = handSpline.EvaluatePosition(space);
             Vector3 rot = handSpline.EvaluateUpVector(space);
-            handCard[i].SetTransform(pos);
-            handCard[i].SetRotation(rot);
+            cardPositions.Add(pos);
+            cardRotations.Add(rot);
         }
     }
     
-    public void SwapCardIndex(int index1, int index2)
+
+    public void SortCardsAndPositions(List<Card> cardList)
     {
-        if (index1 < 0 || index1 >= handCard.Count || index2 < 0 || index2 >= handCard.Count) return;
-        
-        (handCard[index1], handCard[index2]) = (handCard[index2], handCard[index1]);
-        
-        UpdateCardTransform();
-    }
-    
-    void TryPlayCard(CardInfo info)
-    {
-        
-        
+        if (cardList == null || cardList.Count <= 1) return;
+
+        // 2. 使用 LINQ 进行多级排序（这里以 先按颜色、再按类型、最后按数字 排序为例）
+        List<Card> sortedList = cardList
+            .OrderBy(c => c.cardInfo.color)
+            .ThenBy(c => c.cardInfo.type)
+            .ThenBy(c => c.cardInfo.number)
+            .ToList();
+
+        // 3. 将物理坐标重新赋给排序后的卡牌对象
+        for (int i = 0; i < sortedList.Count; i++)
+        {
+            sortedList[i].SetTransform(cardPositions[i]);
+            sortedList[i].SetRotation(cardRotations[i]);
+        }
+
+        // 4. 将原本的 List 内容更新为排序后的结果
+        cardList.Clear();
+        cardList.AddRange(sortedList);
     }
     
     
