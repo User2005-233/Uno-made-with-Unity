@@ -8,26 +8,24 @@ using System.Linq;
 
 using System.Text;
 
-using Unity.VisualScripting;
-
 using UnityEngine;
 
 using UnityEngine.AddressableAssets;
-
 using UnityEngine.ResourceManagement.AsyncOperations;
-
-
 using DG.Tweening;
+using System;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using UnityEngine.EventSystems;
 
 
-public class Card : MonoBehaviour
-
+public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
 {
     public CardType cardType;
     public CardColor cardColor;
     public int cardNum = -1;
     public CardInfo cardInfo;
-    bool inHand = false;
+    public bool inMyHand = false;
     bool onDrag = false;
     SpriteRenderer spriteRenderer;
     readonly Color hovered = new Color(0.75f, 0.75f, 0.75f);
@@ -55,26 +53,40 @@ public class Card : MonoBehaviour
     //TODO: implement smooth follow the mouse movement if draged
     void Update()
     {
-        if (inHand)
+        if (inMyHand)
         {
             if (onDrag) OnDrag();
             else OnDragEnd();
         }
     }
 
-    void OnMouseDown()
-    {
-        onDrag = true;
-    }
-    void OnMouseUp()
-    {
-        onDrag = false;
-    }
-    void OnMouseOver()
+    public void OnPointerEnter(PointerEventData eventData)
     {
         spriteRenderer.color = hovered;
     }
-    void OnMouseExit()
+    
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        spriteRenderer.color = Color.white;
+    }
+    
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        onDrag = true;
+    }
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        onDrag = false;
+        if (RectTransformUtility.RectangleContainsScreenPoint(GameObject.FindGameObjectWithTag("PlayCardRegion").transform.GetComponent<RectTransform>(), Input.mousePosition))
+        {
+            manager.BroadCastPlayCard(cardInfo);
+        }
+    }
+    public void OnDrag(PointerEventData eventData)
+    {
+        spriteRenderer.color = hovered;
+    }
+    public void OnDragExit(PointerEventData eventData)
     {
         spriteRenderer.color = Color.white;
     }
@@ -214,7 +226,7 @@ public class Card : MonoBehaviour
         sb.Append("]");
         string path = sb.ToString();
         Addressables.LoadAssetAsync<Sprite>(path).Completed += Card_Completed;
-        inHand = true;
+        inMyHand = true;
     }
     public void SetProperties(CardColor color, int num)
     {
@@ -250,7 +262,7 @@ public class Card : MonoBehaviour
         sb.Append("]");
         string path = sb.ToString();
         Addressables.LoadAssetAsync<Sprite>(path).Completed += Card_Completed;
-        inHand = true;
+        inMyHand = true;
     }
 
     // 改变卡牌属性

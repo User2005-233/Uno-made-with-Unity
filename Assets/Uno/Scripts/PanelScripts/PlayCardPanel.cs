@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayCardPane : BasePanel
+public class PlayCardPanel : BasePanel
 {
 
     Image playCardRegion;
@@ -20,7 +20,7 @@ public class PlayCardPane : BasePanel
 
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<PlayCardPane>(this);
+        UIManager.Instance.RegisterPanel<PlayCardPanel>(this);
         playCardRegion = transform.Find("PlayCardRegion").GetComponent<Image>();
         playCardRegion.color = offRegionColor;
         playCardText = playCardRegion.transform.Find("PlayHint").GetComponent<TextMeshProUGUI>();

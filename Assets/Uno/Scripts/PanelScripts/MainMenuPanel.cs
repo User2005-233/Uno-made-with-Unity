@@ -29,26 +29,23 @@ public class MainMenuPanel : BasePanel
 
     private void OnNetGameButtonClicked()
     {
-        // TODO: Start net game
         UIManager.Instance.ShowPanel<NetworkPanel>();
         Hide();
     }
 
     private void OnQuitButtonClicked()
     {
-        // TODO: Quit game
-        // Application.Quit();
+        Application.Quit();
     }
 
     private void OnAiGameButtonClicked()
     {
-        // TODO: Start AI game
-        
+        UIManager.Instance.ShowPanel<SinglePlayerSettingPanel>();
+        Hide();
     }
 
     private void OnSettingsButtonClicked()
     {
-        // TODO: Open settings
         UIManager.Instance.ShowPanel<SettingsPanel>();
         Hide();
     }

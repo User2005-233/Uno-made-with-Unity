@@ -6,15 +6,16 @@ public class PlayerItem : MonoBehaviour
 {
     TextMeshProUGUI playerName;
     Image playerIcon;
-    Button kickBtn;
+    Button Btn;
     int playerId;
+    bool IAmClient = true;
     
     void Awake()
     {
         playerName = transform.Find("PlayerName").GetComponent<TextMeshProUGUI>();
         playerIcon = transform.Find("PlayerIcon").GetComponent<Image>();
-        kickBtn = transform.Find("KickBtn").GetComponent<Button>();
-        kickBtn.onClick.AddListener(OnKickBtnClick);
+        Btn = transform.Find("KickBtn").GetComponent<Button>();
+        Btn.onClick.AddListener(OnKickBtnClick);
     }
     public void SetPlayerId(int id)
     {
@@ -29,10 +30,21 @@ public class PlayerItem : MonoBehaviour
     {
         playerIcon.sprite = icon;
     }
+    
+    public void SetIAmClient(bool isClient)
+    {
+        IAmClient = isClient;
+        if (!IAmClient)
+        {
+            Btn.gameObject.SetActive(false);
+        }
+    }
 
     void OnKickBtnClick()
     {
         // TODO: 把人踢出去
+        GameManager.Instance.KickPlayer(playerId);
     }
+    
     
 }

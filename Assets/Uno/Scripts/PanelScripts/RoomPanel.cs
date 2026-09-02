@@ -8,12 +8,17 @@ public class RoomPanel:BasePanel
     TextMeshProUGUI roomName;
     GameObject playerItemPrefab;
     Dictionary<int, PlayerItem> playerItems = new Dictionary<int, PlayerItem>();
+    Button startGameBtn;
+    Button leaveRoomBtn;
+
     public override void InitContent()
     {
         UIManager.Instance.RegisterPanel<RoomPanel>(this);
         EventManager.Instance.AddListener<LoadRoomDataEvent>(OnLoadRoomData);
-        EventManager.Instance.AddNetListener<PlayerJoinedMessage>(OnPlayerJoined);
-        EventManager.Instance.AddNetListener<PlayerLeftMessage>(OnPlayerLeft);
+        startGameBtn = transform.Find("StartBtn").GetComponent<Button>();
+        leaveRoomBtn = transform.Find("ExitBtn").GetComponent<Button>();
+        startGameBtn.onClick.AddListener(OnStartGame);
+        leaveRoomBtn.onClick.AddListener(OnLeaveRoom);
     }
     protected override void Awake()
     {
@@ -41,17 +46,15 @@ public class RoomPanel:BasePanel
         playerItems.Add(playerId, item);
     }
 
-    void OnPlayerJoined(INetEventMessage message)
+    void OnStartGame()
     {
-        // TODO: add player item
-        var netMessage = (PlayerJoinedMessage)message;
-        AddPlayerItem(netMessage.ClientId, netMessage.PlayerName);
+        // TODO: start game
+        GameManager.Instance.StartGame();
     }
-
-    void OnPlayerLeft(INetEventMessage message)
+    
+    void OnLeaveRoom()
     {
-        // TODO: remove player item
-        var netMessage = (PlayerLeftMessage)message;
-        playerItems.Remove(netMessage.ClientId);
+        // TODO: leave room
+        GameManager.Instance.ExitRoom();
     }
 }

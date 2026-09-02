@@ -11,6 +11,8 @@ public class EventManager : ModuleSingleton<EventManager>
     private readonly Dictionary<int, LinkedList<Action>> _actionListeners = new Dictionary<int, LinkedList<Action>>(100);
     private readonly Dictionary<int, LinkedList<Action<IEventMessage>>> _eventListeners = new Dictionary<int, LinkedList<Action<IEventMessage>>>(100);
     private readonly Dictionary<int, LinkedList<Action<INetEventMessage>>> _netEventListeners = new Dictionary<int, LinkedList<Action<INetEventMessage>>>(100);
+    
+    #region Event Message
     // 添加事件监听器
     public void AddListener<TEvent>(System.Action<IEventMessage> listener) where TEvent : IEventMessage
     {
@@ -83,7 +85,9 @@ public class EventManager : ModuleSingleton<EventManager>
             }
         }
     }
+    #endregion
 
+    #region Net Event Message
     // 添加网络事件监听器
     public void AddNetListener<TEvent>(Action<INetEventMessage> listener) where TEvent : INetEventMessage
     {
@@ -169,7 +173,9 @@ public class EventManager : ModuleSingleton<EventManager>
 
         _eventListeners.Clear();
     }
+    #endregion
 
+    #region Action Event
     // 添加动作事件监听器
     public void AddActionListener<TEvent>(System.Action listener) where TEvent : IAction
     {
@@ -217,4 +223,9 @@ public class EventManager : ModuleSingleton<EventManager>
             }
         }
     }
+    #endregion
+
+    #region TEMP 
+    
+    #endregion
 }

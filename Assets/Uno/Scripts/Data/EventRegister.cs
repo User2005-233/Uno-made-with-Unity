@@ -1,33 +1,85 @@
 ﻿using System.Collections.Generic;
+using FishNet.Transporting;
+using FishNet;
 
 
+
+//sent by gamemode
+//to hand card
+public struct CardDealEvent : IEventMessage
+{
+    public Dictionary<int, List<CardInfo>> Cards;
+    public CardDealEvent(Dictionary<int, List<CardInfo>> cards)
+    {
+        Cards = cards;
+    }
+}
+
+public struct PlayCardEvent : IEventMessage
+{
+    public int PlayerId;
+    public CardInfo Card;
+    public PlayCardEvent(int playerId, CardInfo card)
+    {
+        PlayerId = playerId;
+        Card = card;
+    }
+}
+
+public struct SelfPlayerAddEvent : IEventMessage
+{
+    public int PlayerId;
+    public SelfPlayerAddEvent(int playerId)
+    {
+        PlayerId = playerId;
+    }
+}
+
+public struct PlayerEntityAddEvent : IEventMessage
+{
+    public int PlayerId;
+    public PlayerEntityAddEvent(int playerId)
+    {
+        PlayerId = playerId;
+    }
+}
+
+public readonly struct SetPlayerLoopEvent : IEventMessage
+{
+    public readonly List<int> PlayerLoop;
+    public SetPlayerLoopEvent(List<int> playerLoop)
+    {
+        PlayerLoop = playerLoop;
+    }
+}
+
+public struct PauseGameEvent : IAction {}
+
+#region Logic
 
 /// <summary>
 /// 玩家加牌事件
 /// </summary>
-public struct PlayerPlusCardEvent : IEventMessage
-
+public struct CardAddEvent : IEventMessage
 {
-    public Card card;
+    public CardInfo card;
     public int playerCode;
-    public PlayerPlusCardEvent(int code, Card cardIn)
+    public CardAddEvent(int code, CardInfo cardIn)
     {
         playerCode = code;
-
         card = cardIn;
     }
 }
 
 
 /// <summary>
-/// 玩家出牌事件
+/// need to exist for both local and net game
 /// </summary>
-public struct PlayerPlayCardEvent : IEventMessage
-
+public struct CardPlayEvent : IEventMessage
 {
     public CardInfo Card;
     public int Code;
-    public PlayerPlayCardEvent(int code, CardInfo card)
+    public CardPlayEvent(int code, CardInfo card)
     {
         Code = code;
 
@@ -38,23 +90,11 @@ public struct PlayerPlayCardEvent : IEventMessage
 
 
 /// <summary>
-/// 时间截至自动出牌
-/// </summary>
-public struct AutoPlayEvent : IEventMessage
-{
-    int code;
-    public AutoPlayEvent(int code)
-    {
-        this.code = code;
-    }
-}
-
-/// <summary>
 /// 开始下一玩家的出牌
 /// </summary>
 public struct StartPlayerRoundEvent : IEventMessage
 {
-    int code;
+    public readonly int code;
     public StartPlayerRoundEvent(int code)
     {
         this.code = code;
@@ -64,11 +104,11 @@ public struct StartPlayerRoundEvent : IEventMessage
 /// <summary>
 /// 玩家移除牌事件
 /// </summary>
-public struct PlayerRemoveCardEvent : IEventMessage
+public readonly struct CardRemoveEvent : IEventMessage
 {
-    public CardInfo Card;
-    public int Code;
-    public PlayerRemoveCardEvent(int code, CardInfo card)
+    public readonly CardInfo Card;
+    public readonly int Code;
+    public CardRemoveEvent(int code, CardInfo card)
     {
         Code = code;
 
@@ -76,7 +116,7 @@ public struct PlayerRemoveCardEvent : IEventMessage
     }
 }
 
-
+#endregion
 
 /// <summary>
 /// 测试
@@ -118,9 +158,53 @@ public struct LoadRoomDataEvent: IEventMessage
 
 public struct AddPlayerItem :IEventMessage
 {
+    int id;
     string str;
-    public AddPlayerItem(string str)
+    public AddPlayerItem(int id, string str)
     {
+        this.id = id;
         this.str = str;
     }
 }
+
+public struct RemovePlayerItem : IEventMessage
+{
+    int id;
+    public RemovePlayerItem(int id)
+    {
+        this.id = id;
+    }
+}
+
+public struct TurnEvent : IEventMessage
+{
+    public int playerId;
+    public TurnEvent(int playerId)
+    {
+        this.playerId = playerId;
+    }
+}
+
+#region Widgets
+
+public struct ChatEvent : IEventMessage
+{
+    public int id;
+    public string content;
+    public ChatEvent(int id, string content)
+    {
+        this.id = id;
+        this.content = content;
+    }
+}
+
+public struct TriggerAnimEvent : IEventMessage
+{
+    public int animId;
+    public TriggerAnimEvent(int animId)
+    {
+        this.animId = animId;
+    }
+}
+
+#endregion

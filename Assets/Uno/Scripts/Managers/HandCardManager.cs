@@ -12,10 +12,9 @@ using System;
 
 using DG.Tweening;
 using System.Linq;
+using Unity.VisualScripting;
 
-/// <summary>
-/// Visual Manager
-/// </summary>
+//card visual manager
 public class HandCardManager : MonoBehaviour
 {
     List<Card> handCard = new List<Card>();
@@ -25,6 +24,8 @@ public class HandCardManager : MonoBehaviour
     SplineContainer handSpline;
     [SerializeField] float initalSpace = 1f;
     int PlayerCode = 0;
+
+    // TODO: add ai play card module
 
     void Awake()
     {
@@ -48,9 +49,12 @@ public class HandCardManager : MonoBehaviour
 
     void AddListeners()
     {
-        
     }
 
+    public void BroadCastPlayCard(CardInfo cardInfo)
+    {
+        GameManager.Instance.gameMode.TryPlayCard(PlayerCode, cardInfo);
+    }
 
 
     public void InsertHandCard(Card card)
@@ -58,12 +62,15 @@ public class HandCardManager : MonoBehaviour
         handCard.Add(card);
         card.transform.parent = handSpline.transform;
         Debug.Log("Card Received!");
+        UpdateCardTransform();
+        SortCardsAndPositions(handCard);
     }
     
     public void RemoveHandCard(Card card)
     {
         handCard.Remove(card);
         UpdateCardTransform();
+        SortCardsAndPositions(handCard);
     }
 
 

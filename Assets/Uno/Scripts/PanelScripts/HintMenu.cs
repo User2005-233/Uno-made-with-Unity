@@ -1,19 +1,23 @@
 ﻿using TMPro;
 
 using UnityEngine;
+using UnityEngine.UI;
 
 //done
-public class HintMenu : BasePanel
+public class HintPanel : BasePanel
 
 {
     TextMeshProUGUI hintTitle;
     TextMeshProUGUI hintContent;
+    Button closeBtn;
     TickTimer hideTimer;
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<HintMenu>(this);
+        UIManager.Instance.RegisterPanel<HintPanel>(this);
         hintTitle = transform.Find("Frame/Title").GetComponent<TextMeshProUGUI>();
         hintContent = transform.Find("Frame/Content").GetComponent<TextMeshProUGUI>();
+        closeBtn = transform.Find("Frame/CloseBtn").GetComponent<Button>();
+        closeBtn.onClick.AddListener(Hide);
         EventManager.Instance.AddListener<ShowHintEvent>(OnShowHint);
         hideTimer = new TickTimer(3f);
     }

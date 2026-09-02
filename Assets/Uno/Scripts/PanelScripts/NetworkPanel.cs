@@ -23,38 +23,25 @@ public class NetworkPanel : BasePanel
     public override void InitContent()
     {
         UIManager.Instance.RegisterPanel<NetworkPanel>(this);
-        starthostbtn.onClick.AddListener(StartHost);
-        starthostbtn.onClick.AddListener(() => Debug.Log("Host button clicked"));
-        startserverbtn.onClick.AddListener(StartServer);
-        startserverbtn.onClick.AddListener(() => Debug.Log("Server button clicked"));
-        startclientbtn.onClick.AddListener(StartClient);
-        startclientbtn.onClick.AddListener(() => Debug.Log("Client button clicked"));
+        starthostbtn.onClick.AddListener(OnStartHost);
+        // startserverbtn.onClick.AddListener(OnStartServer);
+        startclientbtn.onClick.AddListener(OnStartClient);
         backbtn.onClick.AddListener(OnBack);
     }
     protected override void Awake()
     {
         HideInit();
     }
-    public void StartHost()
+
+    void OnStartHost()
     {
-        StartServer();
-        StartClient();
+        // EventManager.Instance.TriggerEvent<StartHostAction>();
     }
-    private void StartServer()
+    void OnStartClient()
     {
-        SetIPAddress("127.0.0.1");
-        _networkManager.ServerManager.StartConnection();
+        // EventManager.Instance.TriggerEvent<StartClientAction>();
     }
 
-    private void StartClient()
-    {
-        SetIPAddress(ipaddressinputfield.text);
-        _networkManager.ClientManager.StartConnection();
-    }
-    public void SetIPAddress(string text)
-    {
-        _networkManager.TransportManager.Transport.SetClientAddress(text);
-    }
     void OnBack(){
         UIManager.Instance.ShowPanel<MainMenuPanel>();
         UIManager.Instance.HidePanel<NetworkPanel>();

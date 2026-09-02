@@ -395,6 +395,8 @@ public class NetManager : MonoSingleton<NetManager>
 
     #region New Code
 
+    
+
     private NetworkManager _networkManager;
     private void Awake()
     {
@@ -407,6 +409,40 @@ public class NetManager : MonoSingleton<NetManager>
     private void AddListoners()
     {
         // TODO: 添加事件监听
+        //Server Broadcast
+        // InstanceFinder.ServerManager.RegisterBroadcast<>();
+
+        //Client Broadcast
+        InstanceFinder.ClientManager.RegisterBroadcast<S_GameStartMessage>(OnGameStart);
+
+    }
+    
+    private void OnGameStart(S_GameStartMessage message, Channel channel)
+    {
+        // TODO: 处理游戏开始消息
+        
+
+    }
+
+    public void OnStartHost()
+    {
+        OnStartServer();
+        OnStartClient();
+    }
+    private void OnStartServer()
+    {
+        SetIPAddress("127.0.0.1");
+        _networkManager.ServerManager.StartConnection();
+    }
+
+    private void OnStartClient()
+    {
+        SetIPAddress("127.0.0.1");
+        _networkManager.ClientManager.StartConnection();
+    }
+    public void SetIPAddress(string text)
+    {
+        _networkManager.TransportManager.Transport.SetClientAddress(text);
     }
 
     private void OnEnable()
@@ -437,15 +473,23 @@ public class NetManager : MonoSingleton<NetManager>
         {
             Debug.Log($"[服务器] 玩家 {conn.ClientId} 加入了服务器");
             
-            PlayerJoinedMessage msg = new PlayerJoinedMessage(conn.ClientId, $"Player_{conn.ClientId}");
-            EventManager.Instance.SendNetMessage(msg);
+            InstanceFinder.ServerManager.Broadcast(new S_PlayerJoinMessage()
+            {
+                PlayerCode = conn.ClientId,
+                PlayerName = "Player " + conn.ClientId,
+                IsJoin = true
+            });
         }
         else if (args.ConnectionState == RemoteConnectionState.Stopped)
         {
             Debug.Log($"[服务器] 玩家 {conn.ClientId} 离开了服务器");
             
-            PlayerLeftMessage msg = new PlayerLeftMessage(conn.ClientId);
-            EventManager.Instance.SendNetMessage(msg);
+            InstanceFinder.ServerManager.Broadcast(new S_PlayerJoinMessage()
+            {
+                PlayerCode = conn.ClientId,
+                PlayerName = "Player " + conn.ClientId,
+                IsJoin = false
+            });
         }
     }
     private void OnClientRemoteConnectionStateChanged(RemoteConnectionStateArgs args)
@@ -454,18 +498,15 @@ public class NetManager : MonoSingleton<NetManager>
         {
             Debug.Log($"[客户端] 广播：别的玩家 {args.ConnectionId} 加入了游戏");
 
-            PlayerJoinedMessage msg = new PlayerJoinedMessage(args.ConnectionId, $"Player_{args.ConnectionId}");
-            EventManager.Instance.SendNetMessage(msg);
+            
         }
         else if (args.ConnectionState == RemoteConnectionState.Stopped)
         {
             Debug.Log($"[客户端] 广播：别的玩家 {args.ConnectionId} 离开了游戏");
 
-            PlayerLeftMessage msg = new PlayerLeftMessage(args.ConnectionId);
-            EventManager.Instance.SendNetMessage(msg);
+            
         }
     }
-    
 
     #endregion
 
