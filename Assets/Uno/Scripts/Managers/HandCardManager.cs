@@ -53,7 +53,7 @@ public class HandCardManager : MonoBehaviour
 
     public void BroadCastPlayCard(CardInfo cardInfo)
     {
-        GameManager.Instance.gameMode.TryPlayCard(PlayerCode, cardInfo);
+        EventManager.Instance.SendMessage(new CardPlayEvent(PlayerCode, cardInfo));
     }
 
 

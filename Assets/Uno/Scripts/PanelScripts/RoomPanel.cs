@@ -13,7 +13,6 @@ public class RoomPanel:BasePanel
 
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<RoomPanel>(this);
         EventManager.Instance.AddListener<LoadRoomDataEvent>(OnLoadRoomData);
         startGameBtn = transform.Find("StartBtn").GetComponent<Button>();
         leaveRoomBtn = transform.Find("ExitBtn").GetComponent<Button>();

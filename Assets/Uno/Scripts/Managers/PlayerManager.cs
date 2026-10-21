@@ -9,12 +9,12 @@ public class PlayerManager : MonoSingleton<PlayerManager>
     protected override void Awake()
     {
         base.Awake();
-        EventManager.Instance.AddListener<PlayerEntityAddEvent>(OnPlayerEntityAdd);
+        EventManager.Instance.AddListener<PlayerEntityCreateEvent>(OnPlayerEntityAdd);
     }
 
     private void OnPlayerEntityAdd(IEventMessage obj)
     {
-        if (obj is PlayerEntityAddEvent eventMsg)
+        if (obj is PlayerEntityCreateEvent eventMsg)
         {
             AddPlayer(eventMsg.PlayerId);
         }

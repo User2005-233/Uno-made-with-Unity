@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FishNet.Transporting;
 using FishNet;
+using System.Drawing;
 
 
 
@@ -15,30 +16,19 @@ public struct CardDealEvent : IEventMessage
     }
 }
 
-public struct PlayCardEvent : IEventMessage
+public struct SelfPlayerCreateEvent : IEventMessage
 {
     public int PlayerId;
-    public CardInfo Card;
-    public PlayCardEvent(int playerId, CardInfo card)
-    {
-        PlayerId = playerId;
-        Card = card;
-    }
-}
-
-public struct SelfPlayerAddEvent : IEventMessage
-{
-    public int PlayerId;
-    public SelfPlayerAddEvent(int playerId)
+    public SelfPlayerCreateEvent(int playerId)
     {
         PlayerId = playerId;
     }
 }
 
-public struct PlayerEntityAddEvent : IEventMessage
+public struct PlayerEntityCreateEvent : IEventMessage
 {
     public int PlayerId;
-    public PlayerEntityAddEvent(int playerId)
+    public PlayerEntityCreateEvent(int playerId)
     {
         PlayerId = playerId;
     }
@@ -53,7 +43,9 @@ public readonly struct SetPlayerLoopEvent : IEventMessage
     }
 }
 
-public struct PauseGameEvent : IAction {}
+public struct PauseGameEvent : IAction { }
+
+public struct ResumeGameEvent : IAction { }
 
 #region Logic
 
@@ -71,23 +63,77 @@ public struct CardAddEvent : IEventMessage
     }
 }
 
+/// <summary>
+/// 玩家请求抽牌事件
+/// </summary>
+public struct CardDrawRequestEvent : IEventMessage
+{
+    public int Code;
+    public CardDrawRequestEvent(int code)
+    {
+        Code = code;
+    }
+}
 
 /// <summary>
 /// need to exist for both local and net game
 /// </summary>
 public struct CardPlayEvent : IEventMessage
 {
-    public CardInfo Card;
+    public CardInfo card;
     public int Code;
     public CardPlayEvent(int code, CardInfo card)
     {
         Code = code;
 
-        Card = card;
+        this.card = card;
     }
 }
 
+/// <summary>
+/// 玩家改变颜色事件
+/// </summary>
+public struct ChangeColorEvent : IEventMessage
+{
+    public CardColor color;
+    public ChangeColorEvent(CardColor color)
+    {
+        this.color = color;
+    }
+}
 
+public struct UpdateCardInfoEvent : IEventMessage
+{
+    public CardInfo card;
+    public UpdateCardInfoEvent(CardInfo card)
+    {
+        this.card = card;
+    }
+}
+
+/// <summary>
+/// wild draw send event
+/// </summary>
+public struct WildDrawSendEvent : IEventMessage
+{
+    public int Code;
+    public WildDrawSendEvent(int code)
+    {
+        Code = code;
+    }
+}
+
+/// <summary>
+/// wild draw back event
+/// </summary>
+public struct WildDrawBackEvent : IEventMessage
+{
+    public CardColor card;
+    public WildDrawBackEvent(CardColor card)
+    {
+        this.card = card;
+    }
+}
 
 /// <summary>
 /// 开始下一玩家的出牌

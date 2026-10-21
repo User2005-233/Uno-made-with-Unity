@@ -11,8 +11,6 @@ public class EndGamePanel : BasePanel
     
     public override void InitContent()
     {
-        base.InitContent();
-        UIManager.Instance.RegisterPanel<EndGamePanel>(this);
         title = transform.Find("Title").GetComponent<TextMeshProUGUI>();
         content = transform.Find("Content").GetComponent<TextMeshProUGUI>();
         closeBtn = transform.Find("CloseBtn").GetComponent<Button>();

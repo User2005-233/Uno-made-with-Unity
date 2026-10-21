@@ -9,6 +9,7 @@ public class BasePanel : MonoBehaviour
     /// </summary>
     public void Init()
     {
+        UIManager.Instance.RegisterPanel(GetType(), this);
         InitContent();
 
     }

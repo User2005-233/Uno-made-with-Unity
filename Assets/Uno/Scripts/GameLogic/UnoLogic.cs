@@ -4,11 +4,12 @@ using System.Linq;
 using System.Collections.Generic;
 
 using Random = UnityEngine.Random;
+using System.Data;
 
 
 public class UnoLogic
 {
-    #region Variables
+#region Variables
 
     //card info loading usage
     public CardType cardType;
@@ -22,17 +23,16 @@ public class UnoLogic
     GameObject PlayerParent;
 
     //runtime variables
-    CardType CurrentType = CardType.None;
-    CardColor CurrentColor = CardColor.None;
-    int CurrentNum = -1;
     CardInfo currentCardInfo;
     float gameTime = 300f;
     float roundTime = 15f;
     TickTimer gameTimer;
     TickTimer roundTimer;
-    bool isGameStart = false;
+    bool isGameRunning = false;
     bool clockWise = true;
     int currentPlayerRound;
+    bool isNextSkip = false;
+    bool isNextWildDrawFour = false;
 
 
     //all ui assets loading presets
@@ -42,9 +42,9 @@ public class UnoLogic
     public IGameMode gameMode;
     public int selfCode;
 
-    #endregion
+#endregion
 
-    #region Init
+#region Init
 
     /// <summary>
     /// for now: initialize game timer
@@ -142,39 +142,52 @@ public class UnoLogic
         return playerHands;
     }
 
-    public void AddPlayerEntity(){
-        foreach(var player in playerHands.Keys)
+    /// <summary>
+    /// add visiable player entity
+    /// </summary>
+    public void AddPlayerEntity()
+    {
+        foreach (var player in playerHands.Keys)
         {
-            if(player != selfCode)
+            if (player != selfCode)
             {
-                EventManager.Instance.SendMessage(new PlayerEntityAddEvent(player));
+                EventManager.Instance.SendMessage(new PlayerEntityCreateEvent(player));
             }
-            else{
-                EventManager.Instance.SendMessage(new SelfPlayerAddEvent(player));
+            else
+            {
+                EventManager.Instance.SendMessage(new SelfPlayerCreateEvent(player));
             }
         }
     }
 
-    public List<int> ShufflePlayerLoop(){
+    /// <summary>
+    /// shuffle player loop
+    /// </summary>
+    public List<int> ShufflePlayerLoop()
+    {
         playerLoop.Clear();
         playerLoop = new List<int>((gameMode as SinglePlayerGameMode).roomPlayerLoop);
         Shuffler.Shuffle<int>(playerLoop);
         return playerLoop;
     }
 
-    public void ReadPlayerLoop(List<int> list){
+    /// <summary>
+    /// read player loop
+    /// </summary>
+    public void ReadPlayerLoop(List<int> list)
+    {
         //tell playermanager to set player loop
         playerLoop = list;
     }
 
     #endregion
 
-    #region Runtime Logic
+#region Runtime Logic
 
     public void StartGame(List<int> roomPlayerLoop)
     {
         // TODO: start game
-        isGameStart = true;
+        isGameRunning = true;
         gameTimer.Start();
         // EventManager.Instance.SendMessage(new SetPlayerLoopEvent(playerLoop));
         // UIManager.Instance.ShowPanel<GamePanel>();
@@ -183,7 +196,7 @@ public class UnoLogic
     public void Update()
     {
         // TODO: update game logic
-        if (isGameStart)
+        if (isGameRunning)
         {
             gameTimer.Tick(Time.deltaTime);
             roundTimer.Tick(Time.deltaTime);
@@ -202,13 +215,16 @@ public class UnoLogic
         clockWise = !clockWise;
     }
 
+    /// <summary>
+    /// try to see if the card can be played, return true if it can be played
+    /// </summary>
     public bool TryPlayCard(int playerId, CardInfo card)
     {
         // TODO: request to play card
-        if(playerId == currentPlayerRound)
+        if (playerId == currentPlayerRound)
         {
             playerHands[playerId].Remove(card);
-            if(CheckWin())
+            if (CheckWin())
             {
                 EndGame(false);
                 return true;
@@ -217,8 +233,59 @@ public class UnoLogic
         return false;
     }
 
-    public int GetCurrentPlayer(){
+    public int GetCurrentPlayer()
+    {
         return currentPlayerRound;
+    }
+
+    public int GetLastPlayer()
+    {
+        int currentId = currentPlayerRound;
+        if (clockWise)
+        {
+            return playerLoop[(playerLoop.IndexOf(currentId) - 1 + playerLoop.Count) % playerLoop.Count];
+        }
+        else
+        {
+            return playerLoop[(playerLoop.IndexOf(currentId) + 1) % playerLoop.Count];
+        }
+    }
+
+    /// <summary>
+    /// 获取当前玩家最常出现的卡牌颜色
+    /// </summary>
+    public CardColor GetCurrentMostCardColor()
+    {
+        int code = GetCurrentPlayer();
+        Dictionary<CardColor, int> colorCount = new Dictionary<CardColor, int>();
+        for (int i = 0; i < playerHands[code].Count; i++)
+        {
+            if (colorCount.ContainsKey(playerHands[code][i].color))
+            {
+                colorCount[playerHands[code][i].color]++;
+            }
+            else
+            {
+                colorCount[playerHands[code][i].color] = 1;
+            }
+        }
+        CardColor mostColor = CardColor.None;
+        int maxCount = 0;
+        foreach (var pair in colorCount)
+        {
+            if (pair.Value > maxCount)
+            {
+                mostColor = pair.Key;
+                maxCount = pair.Value;
+            }
+        }
+        return mostColor;
+    }
+
+    public bool CheckLastPossessColor(CardColor color)
+    {
+        int lastId = GetLastPlayer();
+        return playerHands[lastId].Any(card => card.color == color);
     }
 
     bool CheckCardInHand(int id, CardInfo info){
@@ -243,13 +310,58 @@ public class UnoLogic
     {
         // TODO: request to draw card
         CardInfo card = GetRandomCard();
-
+        playerHands[playerId].Add(card);
+        EventManager.Instance.SendMessage(new CardAddEvent(playerId, card));
     }
 
-    public void Draw2CardToNow(){
+    public void Draw2CardToNext()
+    {
         // TODO: draw 2 cards to current player
+        NextTurn();
+        DrawCard(currentPlayerRound);
+        DrawCard(currentPlayerRound);
     }
-    
+
+    public void ChangeColor(CardColor color)
+    {
+        currentCardInfo.color = color;
+        EventManager.Instance.SendMessage(new ChangeColorEvent(color));
+    }
+
+    /// <summary>
+    /// 发送下一个玩家WildDraw的请求
+    /// </summary>
+    public void WildDrawSend()
+    {
+        if (!isGameRunning) return;
+        isNextWildDrawFour = true;
+        EventManager.Instance.SendMessage(new WildDrawSendEvent());
+    }
+
+    /// <summary>
+    /// WildDraw的结果返回
+    /// </summary>
+    public void WildDrawBack(CardColor color)
+    {
+        if (playerHands[currentPlayerRound].Count == 0) return;
+        if (CheckLastPossessColor(color))
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                gameMode.DrawCard(currentPlayerRound);
+            }
+            NextTurn();
+        }
+        else
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                gameMode.DrawCard(currentPlayerRound);
+            }
+        }
+        isNextWildDrawFour = false;
+    }
+
     CardInfo GetRandomCard(){
         CardInfo info = randCardQ.Dequeue();
         //check if the randq is empty, if is wash the deck
@@ -263,8 +375,35 @@ public class UnoLogic
     public void AutoPlay()
     {
         // TODO: auto play
-        NextTurn();
-        roundTimer.Next();
+        if (!isGameRunning) return;
+        if (playerHands[currentPlayerRound].Count == 0) return;
+        if (isNextWildDrawFour)
+        {
+            CardColor color = Random.Range(0, 4) switch
+            {
+                0 => CardColor.green,
+                1 => CardColor.blue,
+                2 => CardColor.yellow,
+                3 => CardColor.red,
+                _ => CardColor.wild,
+            };
+            EventManager.Instance.SendMessage(new WildDrawBackEvent(color));
+            return;
+        }
+        for (int i = 0; i < playerHands[currentPlayerRound].Count; i++)
+        {
+            if (gameMode.AutoTryPlayCard(currentPlayerRound, playerHands[currentPlayerRound][i]))
+            {
+                return;
+            }
+        }
+        DrawCard(currentPlayerRound);
+    }
+
+    public void UpdateCardInfo(CardInfo info)
+    {
+        currentCardInfo = info;
+        EventManager.Instance.SendMessage(new UpdateCardInfoEvent(info));
     }
 
     public void EndGame(bool timeUp)
@@ -280,7 +419,7 @@ public class UnoLogic
             // TODO: win
             UIManager.Instance.ShowPanel<EndGamePanel>();
         }
-        isGameStart = false;
+        isGameRunning = false;
     }
 
     public void NextTurn()
@@ -319,18 +458,20 @@ public class UnoLogic
 
     #endregion
 
-    #region Util
+#region Util
 
-    public void SuspendGame()
-    {
-        // TODO: suspend game
-    }
+public void SuspendGame()
+{
+    // TODO: suspend game
+    isGameRunning = false;
+}
 
-    public void ResumeGame()
-    {
-        // TODO: resume game
-    }
+public void ResumeGame()
+{
+    // TODO: resume game
+    isGameRunning = true;
+}
 
-    #endregion
+#endregion
     
 }

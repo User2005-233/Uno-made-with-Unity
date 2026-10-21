@@ -10,7 +10,6 @@ public class SoundSubPanel : BasePanel
 
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<SoundSubPanel>(this);
         soundVolumeSlider = transform.Find("Panel/OverallVolume/Slider").GetComponent<Slider>();
         musicVolumeSlider = transform.Find("Panel/MusicVolume/Slider").GetComponent<Slider>();
         sfxVolumeSlider = transform.Find("Panel/SFXVolume/Slider").GetComponent<Slider>();

@@ -5,15 +5,13 @@ public class SinglePlayerSettingPanel : BasePanel
 {
     InputField inputField;
     Button tryStartGameBtn;
-    string title = "提示";
-    string content = "请输入3-6之间的数字";
+    readonly string title = "提示";
+    readonly string content = "请输入3-6之间的数字";
     public override void InitContent()
     {
-        base.InitContent();
         inputField = transform.Find("Number").GetComponent<InputField>();
         tryStartGameBtn = transform.Find("TryStartGameBtn").GetComponent<Button>();
         tryStartGameBtn.onClick.AddListener(OnTryStartGame);
-        UIManager.Instance.RegisterPanel<SinglePlayerSettingPanel>(this);
     }
 
     void OnTryStartGame(){

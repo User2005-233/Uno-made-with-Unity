@@ -22,7 +22,6 @@ public class NetworkPanel : BasePanel
 
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<NetworkPanel>(this);
         starthostbtn.onClick.AddListener(OnStartHost);
         // startserverbtn.onClick.AddListener(OnStartServer);
         startclientbtn.onClick.AddListener(OnStartClient);

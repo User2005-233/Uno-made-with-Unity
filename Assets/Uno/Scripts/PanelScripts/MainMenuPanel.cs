@@ -15,7 +15,6 @@ public class MainMenuPanel : BasePanel
     
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<MainMenuPanel>(this);
         netGameBtn = transform.Find("GameMode/NetGameBtn").GetComponent<Button>();
         quitBtn = transform.Find("GameMode/QuitBtn").GetComponent<Button>();
         aiGameBtn = transform.Find("GameMode/AiGameBtn").GetComponent<Button>();

@@ -13,7 +13,6 @@ public class HintPanel : BasePanel
     TickTimer hideTimer;
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<HintPanel>(this);
         hintTitle = transform.Find("Frame/Title").GetComponent<TextMeshProUGUI>();
         hintContent = transform.Find("Frame/Content").GetComponent<TextMeshProUGUI>();
         closeBtn = transform.Find("Frame/CloseBtn").GetComponent<Button>();

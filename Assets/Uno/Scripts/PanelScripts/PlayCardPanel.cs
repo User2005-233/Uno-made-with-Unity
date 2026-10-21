@@ -20,7 +20,6 @@ public class PlayCardPanel : BasePanel
 
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<PlayCardPanel>(this);
         playCardRegion = transform.Find("PlayCardRegion").GetComponent<Image>();
         playCardRegion.color = offRegionColor;
         playCardText = playCardRegion.transform.Find("PlayHint").GetComponent<TextMeshProUGUI>();

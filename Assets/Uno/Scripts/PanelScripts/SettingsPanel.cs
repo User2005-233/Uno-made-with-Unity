@@ -8,7 +8,6 @@ public class SettingsPanel : BasePanel
     
     public override void InitContent()
     {
-        UIManager.Instance.RegisterPanel<SettingsPanel>(this);
         backButton = transform.Find("BackBtn").GetComponent<Button>();
         backButton.onClick.AddListener(OnBackButtonClicked);
     }

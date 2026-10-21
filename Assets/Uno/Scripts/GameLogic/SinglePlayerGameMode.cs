@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 public class SinglePlayerGameMode : MonoBehaviour, IGameMode
 {
 
@@ -10,9 +11,9 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
     private bool isGameStart = false;
     private int codeMe = 0;
 
-    #endregion
+#endregion
 
-    #region Events
+#region Events
 
     /// <summary>
     /// Register event listeners
@@ -23,25 +24,51 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
         AddListeners();
     }
 
-    void AddListeners(){
+    void AddListeners()
+    {
         EventManager.Instance.AddListener<CardPlayEvent>(OnCardPlayEvent);
+        EventManager.Instance.AddListener<CardDrawRequestEvent>(OnCardDrawRequestEvent);
+        EventManager.Instance.AddListener<WildDrawBackEvent>(OnWildDrawBackEvent);
         EventManager.Instance.AddActionListener<PauseGameEvent>(OnPauseGameEvent);
-        
+        EventManager.Instance.AddActionListener<ResumeGameEvent>(OnResumeGameEvent);
     }
 
-    void OnCardPlayEvent(IEventMessage message){
+    void OnResumeGameEvent()
+    {
+        _logic.ResumeGame();
+        Debug.Log("Game resumed");
+    }
+
+    void OnCardDrawRequestEvent(IEventMessage message)
+    {
+        var msg = (CardDrawRequestEvent)message;
+        if (_logic.GetCurrentPlayer() != msg.Code) return;
+        DrawCard(msg.Code);
+    }
+
+    void OnWildDrawBackEvent(IEventMessage message)
+    {
+        var msg = (WildDrawBackEvent)message;
+        _logic.WildDrawBack(msg.card);
+    }
+
+    void OnCardPlayEvent(IEventMessage message)
+    {
         var msg = (CardPlayEvent)message;
-        Debug.Log($"Card played: {msg.Card}");
+        TryPlayCard(msg.Code, msg.card);
+        Debug.Log($"Card played: {msg.card}");
     }
 
-    void OnPauseGameEvent(){
+    void OnPauseGameEvent()
+    {
+        _logic.SuspendGame();
         Debug.Log("Game paused");
     }
 
-    #endregion
+#endregion
 
 
-    #region StartGame
+#region StartGame
     
     /// <summary>
     /// Add players to the game. This will be called later when we have a proper player system.
@@ -84,9 +111,9 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
         _logic.WashDeck();
     }
 
-    #endregion
+#endregion
 
-    #region Runtime
+#region Runtime
 
     public void Update()
     {
@@ -95,26 +122,57 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
             _logic.Update();
         }
     }
-    
+
     //main logic play card interface
     public void TryPlayCard(int id, CardInfo card)
     {
-        if(_logic.GetCurrentPlayer() == id && _logic.CheckPlayable(card))
+        if (_logic.GetCurrentPlayer() == id && _logic.CheckPlayable(card))
         {
             // TODO: play card
-            if(_logic.TryPlayCard(id, card))
+            if (_logic.TryPlayCard(id, card))
+            {
                 CardFunction(card);
+                _logic.UpdateCardInfo(card);
+                _logic.NextTurn();
+            }
             else
-                EventManager.Instance.SendMessage(new ShowHintEvent("Error", "Play card failed"));
+                EventManager.Instance.SendMessage(new ShowHintEvent("Failed", "Play card failed"));
         }
         else
         {
             // TODO: show error
-            EventManager.Instance.SendMessage(new ShowHintEvent("Error", "Card is not playable"));
+            EventManager.Instance.SendMessage(new ShowHintEvent("Failed", "Card is not playable"));
         }
     }
 
-    //let the card function
+    /// <summary>
+    /// used for timeup auto play card
+    /// </summary>
+    public bool AutoTryPlayCard(int id, CardInfo card)
+    {
+        if (_logic.GetCurrentPlayer() == id && _logic.CheckPlayable(card))
+        {
+            // TODO: play card
+            if (_logic.TryPlayCard(id, card))
+            {
+                CardFunction(card);
+                _logic.NextTurn();
+                return true;
+            }
+            else
+                EventManager.Instance.SendMessage(new ShowHintEvent("Failed", "Play card failed"));
+        }
+        else
+        {
+            // TODO: show error
+            EventManager.Instance.SendMessage(new ShowHintEvent("Failed", "Card is not playable"));
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// handle the card function when the card is played
+    /// </summary>
     void CardFunction(CardInfo card)
     {
         switch(card.type)
@@ -128,13 +186,20 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
                 _logic.ReverseDirection();
                 break;
             case CardType.PlusTwo:
-                _logic.Draw2CardToNow();
+                _logic.Draw2CardToNext();
                 break;
             case CardType.Wild:
-                // TODO: choose color
+                if (card.color != CardColor.None)
+                    _logic.ChangeColor(_logic.GetCurrentMostCardColor());
+                else
+                    _logic.ChangeColor(card.color);
                 break;
             case CardType.WildDrawFour:
-                // TODO: choose color
+                if (card.color != CardColor.None)
+                    _logic.ChangeColor(_logic.GetCurrentMostCardColor());
+                else
+                    _logic.ChangeColor(card.color);
+                _logic.WildDrawSend();
                 break;
         }
     }
@@ -155,5 +220,5 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
         Debug.Log("Game over");
     }
 
-    #endregion
+#endregion
 }
