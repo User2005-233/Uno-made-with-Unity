@@ -24,6 +24,7 @@ public class BasePanel : MonoBehaviour
     /// </summary>
     public void HideInit()
     {
+        UIManager.Instance.RegisterPanel(GetType(), this);
         InitContent();
 
         Hide();

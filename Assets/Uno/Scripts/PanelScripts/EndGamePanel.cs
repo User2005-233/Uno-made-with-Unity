@@ -5,15 +5,15 @@ using TMPro;
 public class EndGamePanel : BasePanel
 {
 
-    TextMeshProUGUI title;
-    TextMeshProUGUI content;
-    Button closeBtn;
+    [SerializeField] TextMeshProUGUI title;
+    [SerializeField] TextMeshProUGUI content;
+    [SerializeField] Button closeBtn;
     
     public override void InitContent()
     {
-        title = transform.Find("Title").GetComponent<TextMeshProUGUI>();
-        content = transform.Find("Content").GetComponent<TextMeshProUGUI>();
-        closeBtn = transform.Find("CloseBtn").GetComponent<Button>();
+        title = transform.Find("Frame/Title").GetComponent<TextMeshProUGUI>();
+        content = transform.Find("Frame/Content").GetComponent<TextMeshProUGUI>();
+        closeBtn = transform.Find("Frame/CloseBtn").GetComponent<Button>();
         closeBtn.onClick.AddListener(OnCloseBtnClick);
     }
 

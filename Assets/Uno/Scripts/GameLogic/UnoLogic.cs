@@ -38,9 +38,9 @@ public class UnoLogic
     //all ui assets loading presets
 
     //Players data/setting variables
-    public List<int> playerLoop;
+    public List<int> playerLoop = new List<int>();
     public IGameMode gameMode;
-    public int selfCode;
+    public int selfCode = 0;
 
 #endregion
 
@@ -109,9 +109,18 @@ public class UnoLogic
             }
         }
     }
+    
+    public void InitializePlayerHands(List<int> roomPlayerLoop)
+    {
+        foreach (int code in roomPlayerLoop)
+        {
+            playerHands[code] = new List<CardInfo>();
+        }
+    }
 
     /// <summary>
     /// Initialize the deck random queue
+    /// And part of the rewash randQ process
     /// </summary>
     public void WashDeck()
     {
@@ -151,11 +160,11 @@ public class UnoLogic
         {
             if (player != selfCode)
             {
-                EventManager.Instance.SendMessage(new PlayerEntityCreateEvent(player));
+                EventManager.Instance.SendMessage(new PlayerEntityCreateEvent(player, false));
             }
             else
             {
-                EventManager.Instance.SendMessage(new SelfPlayerCreateEvent(player));
+                EventManager.Instance.SendMessage(new PlayerEntityCreateEvent(player, true));
             }
         }
     }
@@ -208,6 +217,25 @@ public class UnoLogic
                 AutoPlay();
             }
         }
+    }
+
+    public void Put1stRandomCard()
+    {
+        currentCardInfo = GetRandomCard();
+        UpdateCardPlayVisual(-1, currentCardInfo);
+        UpdateTurn();
+    }
+
+    /// <summary>
+    /// Collect a card into the deck list
+    /// </summary>
+    public void CollectCard(CardInfo info)
+    {
+        CardInfoList.Add(info);
+    }
+
+    public void UpdateCardPlayVisual(int id = -1, CardInfo info = null){
+        EventManager.Instance.SendMessage(new UpdateCardPlayVisualEvent(id, info));
     }
 
     public void ReverseDirection()
@@ -362,6 +390,10 @@ public class UnoLogic
         isNextWildDrawFour = false;
     }
 
+    /// <summary>
+    /// already handles the randQ empty case
+    /// </summary>
+    /// <returns></returns>
     CardInfo GetRandomCard(){
         CardInfo info = randCardQ.Dequeue();
         //check if the randq is empty, if is wash the deck
@@ -403,7 +435,6 @@ public class UnoLogic
     public void UpdateCardInfo(CardInfo info)
     {
         currentCardInfo = info;
-        EventManager.Instance.SendMessage(new UpdateCardInfoEvent(info));
     }
 
     public void EndGame(bool timeUp)
@@ -425,7 +456,7 @@ public class UnoLogic
     public void NextTurn()
     {
         // TODO: change turn
-        if(clockWise)
+        if (clockWise)
         {
             int nextIndex = (currentPlayerRound + 1) % playerLoop.Count;
             currentPlayerRound = nextIndex;
@@ -436,6 +467,11 @@ public class UnoLogic
             currentPlayerRound = nextIndex;
         }
         roundTimer.Next();
+    }
+
+    public void UpdateTurn()
+    {
+        EventManager.Instance.SendMessage(new TurnChangedEvent(currentPlayerRound));
     }
 
     public void SkipTurn()

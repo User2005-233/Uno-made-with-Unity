@@ -2,6 +2,7 @@
 using FishNet.Transporting;
 using FishNet;
 using System.Drawing;
+using Unity.VisualScripting;
 
 
 
@@ -16,21 +17,14 @@ public struct CardDealEvent : IEventMessage
     }
 }
 
-public struct SelfPlayerCreateEvent : IEventMessage
-{
-    public int PlayerId;
-    public SelfPlayerCreateEvent(int playerId)
-    {
-        PlayerId = playerId;
-    }
-}
-
 public struct PlayerEntityCreateEvent : IEventMessage
 {
     public int PlayerId;
-    public PlayerEntityCreateEvent(int playerId)
+    public bool isSelf;
+    public PlayerEntityCreateEvent(int playerId, bool isSelf)
     {
         PlayerId = playerId;
+        this.isSelf = isSelf;
     }
 }
 
@@ -40,6 +34,18 @@ public readonly struct SetPlayerLoopEvent : IEventMessage
     public SetPlayerLoopEvent(List<int> playerLoop)
     {
         PlayerLoop = playerLoop;
+    }
+}
+
+/// <summary>
+/// event for updating player turn animation
+/// </summary>
+public struct TurnChangedEvent : IEventMessage
+{
+    public int CurrentPlayerRound;
+    public TurnChangedEvent(int currentPlayerRound)
+    {
+        CurrentPlayerRound = currentPlayerRound;
     }
 }
 
@@ -90,6 +96,17 @@ public struct CardPlayEvent : IEventMessage
     }
 }
 
+public struct UpdateCardPlayVisualEvent : IEventMessage
+{
+    public int id;
+    public CardInfo info;
+    public UpdateCardPlayVisualEvent(int id, CardInfo info)
+    {
+        this.id = id;
+        this.info = info;
+    }
+}
+
 /// <summary>
 /// 玩家改变颜色事件
 /// </summary>
@@ -99,15 +116,6 @@ public struct ChangeColorEvent : IEventMessage
     public ChangeColorEvent(CardColor color)
     {
         this.color = color;
-    }
-}
-
-public struct UpdateCardInfoEvent : IEventMessage
-{
-    public CardInfo card;
-    public UpdateCardInfoEvent(CardInfo card)
-    {
-        this.card = card;
     }
 }
 

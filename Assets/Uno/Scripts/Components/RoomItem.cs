@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,7 @@ public class RoomItem : MonoBehaviour
     {
         roomSize = transform.Find("RoomSize").GetComponent<TextMeshProUGUI>();
         roomName = transform.Find("RoomName").GetComponent<TextMeshProUGUI>();
-        joinButton = transform.Find("JoinButton").GetComponent<Button>();
+        joinButton = transform.Find("JoinBtn").GetComponent<Button>();
         joinButton.onClick.AddListener(OnJoinButtonClicked);
     }
     

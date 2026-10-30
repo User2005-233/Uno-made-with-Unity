@@ -4,10 +4,12 @@ public static class Shuffler
 {
     public static void Shuffle<T>(List<T> list)
     {
-        for (int i = list.Count - 1; i > 0; i--)
+        for (int i = 0; i < list.Count; i++)
         {
-            int j = UnityEngine.Random.Range(0, i + 1);
-            (list[i], list[j]) = (list[j], list[i]);
+            int randomIndex = UnityEngine.Random.Range(i, list.Count);
+            T temp = list[i];
+            list[i] = list[randomIndex];
+            list[randomIndex] = temp;
         }
     }
 }

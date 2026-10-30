@@ -16,13 +16,14 @@ public class PlayerEntity : MonoBehaviour
         EventManager.Instance.AddListener<CardDealEvent>(OnCardDeal);
         EventManager.Instance.AddListener<CardAddEvent>(OnCardAdd);
         EventManager.Instance.AddListener<TurnEvent>(OnTurn);
+        mainCamera = transform.Find("Main Camera").GetComponent<Camera>();
+        handCardManager = transform.Find("HandCard").GetComponent<HandCardManager>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        mainCamera = transform.Find("Main Camera").GetComponent<Camera>();
-        handCardManager = transform.Find("HandCard").GetComponent<HandCardManager>();
+
     }
     
     public void SetCode(int code)
@@ -84,12 +85,6 @@ public class PlayerEntity : MonoBehaviour
         var msg = (CardAddEvent)message;
         playerCards.Add(msg.card);
         bool selectable = isSelf;
-        //spawn card gameobject
-        if (cardPrefab == null)
-        {
-            Debug.LogError("Card prefab is not assigned!");
-            return;
-        }
         Card card = CardPoolManager.Instance.GetCard();
         card.ChangeProperties(msg.card);
         card.inMyHand = selectable;

@@ -57,6 +57,7 @@
         "Temp/": true
     },
     "dotnet.defaultSolution": "Uno-made-with-Unity.sln",
+    "dotnet.projects.enableAutomaticRestore": true,
     "dotrush.roslyn.projectOrSolutionFiles": [
         "d:\\UnityProject\\Uno-made-with-Unity\\Uno-made-with-Unity.sln"
     ]

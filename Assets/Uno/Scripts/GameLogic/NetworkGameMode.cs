@@ -43,4 +43,9 @@ public class NetworkGameMode : IGameMode
     {
         throw new System.NotImplementedException();
     }
+
+    public bool AutoTryPlayCard(int id, CardInfo card)
+    {
+        throw new System.NotImplementedException();
+    }
 }

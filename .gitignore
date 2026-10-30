@@ -47,6 +47,7 @@ ExportedObj/
 *.unityproj
 *.sln
 *.slnx
+!Uno-made-with-Unity.CSharp.sln
 *.suo
 *.tmp
 *.user

@@ -27,25 +27,7 @@ public class GameManager : MonoSingleton<GameManager>
     Color hovered = new Color(0.75f, 0.75f, 0.75f);
     private Dictionary<int, List<CardInfo>> playerHands = new Dictionary<int, List<CardInfo>>();
     bool isHost = true;
-    List<CardInfo> CardInfoList = new List<CardInfo>();
-    Queue<CardInfo> randCardQ = new Queue<CardInfo>();
-    protected int DeckSize = 108;
     GameObject PlayerParent;
-
-
-
-    //runtime variables
-    CardType CurrentType = CardType.None;
-    CardColor CurrentColor = CardColor.None;
-    int CurrentNum = -1;
-    CardInfo currentCardInfo;
-    float gameTime = 300f;
-    float roundTime = 15f;
-    TickTimer gameTimer;
-    TickTimer roundTimer;
-    bool isGameStart = false;
-    int currentPlayerRound;
-
 
     //all ui assets loading presets
 
@@ -201,90 +183,32 @@ public class GameManager : MonoSingleton<GameManager>
     }
     private void Update()
     {
-        if(isGameStart) GameLoop();
+        
     }
 
 
-    private void GameLoop()
-    {
-        gameTimer.Tick(Time.deltaTime);
-        roundTimer.Tick(Time.deltaTime);
-
-        if (gameTimer.IsCompleted)
-        {
-            // 游戏结束
-            CalculateScore();
-            InstanceFinder.ServerManager.Broadcast(new S_GameEndMessage());
-            isGameStart = false;
-            gameTimer.Reset();
-            roundTimer.Reset();
-
-        }
-
-        if (roundTimer.IsCompleted)
-        {
-            roundTimer.Next();
-        }
-    }
     
 
-    //put the first random card on the table
-    private void Put1stRandomCard()
-    {
-        currentCardInfo = randCardQ.Dequeue();
 
-    }
-    
 
-    private CardInfo GetRandomCard()
-    {
-        return randCardQ.Dequeue();
-    }
 
-    private CardInfo GetCurrentCardInfo()
-    {
-        return currentCardInfo;
-    }
 
-    private void CollectCard(CardInfo info){
-        CardInfoList.Add(info);
-        if(CardInfoList.Count == (cardNum-1))
-        {
-            // TODO: 处理牌堆满了的情况
-        }
-    }
 
     private void PlayCardSuccess(int id, CardInfo card)
     {
         //TODO: changes after played card
-        if (card.type == CardType.Wild || card.type == CardType.WildDrawFour)
-        {
+        // if (card.type == CardType.Wild || card.type == CardType.WildDrawFour)
+        // {
             
-        }
-        if (card.type == currentCardInfo.type || card.color == currentCardInfo.color || card.number == currentCardInfo.number)
-        {
+        // }
+        // if (card.type == currentCardInfo.type || card.color == currentCardInfo.color || card.number == currentCardInfo.number)
+        // {
             
-        }
-        InstanceFinder.ServerManager.Broadcast(new S_CardPlayMessage(id, card));
+        // }
+        // InstanceFinder.ServerManager.Broadcast(new S_CardPlayMessage(id, card));
     }
 
-    private void SetCurrentCardInfo(CardInfo cardInfo)
-    {
-        currentCardInfo = cardInfo;
-    }
 
-    bool CheckPlayable(CardInfo card)
-    {
-        if(card.type == CardType.Wild || card.type == CardType.WildDrawFour)
-        {
-            return true;
-        }
-        if(card.type == currentCardInfo.type || card.color == currentCardInfo.color || card.number == currentCardInfo.number)
-        {
-            return true;
-        }
-        return false;
-    }
 
     private void OnPlayerLeave(FishNet.Connection.NetworkConnection connection, C_PlayerLeftMessage message, FishNet.Transporting.Channel channel)
     {
@@ -294,28 +218,28 @@ public class GameManager : MonoSingleton<GameManager>
     private void OnCardOp(FishNet.Connection.NetworkConnection connection, C_CardOpMessage message, FishNet.Transporting.Channel channel)
     {
         // TODO: 处理卡牌操作
-        if(message.isPlay){
-            // TODO: 处理出牌
-            if(CheckCardInHand(message.PlayerCode, message.Card))
-            {
-                if(CheckPlayable(message.Card))
-                {
-                    PlayCardSuccess(message.PlayerCode, message.Card);
-                }
-            }
-        }
-        else{
-            // TODO: 处理抽牌
-            DrawCard(message.PlayerCode);
-        }
+        // if(message.isPlay){
+        //     // TODO: 处理出牌
+        //     if(CheckCardInHand(message.PlayerCode, message.Card))
+        //     {
+        //         if(CheckPlayable(message.Card))
+        //         {
+        //             PlayCardSuccess(message.PlayerCode, message.Card);
+        //         }
+        //     }
+        // }
+        // else{
+        //     // TODO: 处理抽牌
+        //     DrawCard(message.PlayerCode);
+        // }
     }
 
     void DrawCard(int id)
     {
         // TODO: 处理抽牌
-        CardInfo info = GetRandomCard();
-        playerHands[id].Add(info);
-        InstanceFinder.ServerManager.Broadcast(new S_CardDrawMessage(id,info));
+        // CardInfo info = GetRandomCard();
+        // playerHands[id].Add(info);
+        // InstanceFinder.ServerManager.Broadcast(new S_CardDrawMessage(id,info));
     }
     
 
@@ -326,14 +250,14 @@ public class GameManager : MonoSingleton<GameManager>
     public void OnGameStart(S_GameStartMessage message, Channel channel)
     {
         // TODO: 初始化游戏状态
-        isGameStart = true;
-        Put1stRandomCard();
+        // isGameStart = true;
+        // Put1stRandomCard();
     }
 
     void OnGameEnd(S_GameEndMessage message, Channel channel)
     {
         // TODO: 游戏结束逻辑
-        isGameStart = false;
+        // isGameStart = false;
     }
 
     void OnPlayerLoopSync(S_LoopSyncMessage message, Channel channel)

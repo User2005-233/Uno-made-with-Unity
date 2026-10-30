@@ -16,12 +16,12 @@ public class MainMenuPanel : BasePanel
     public override void InitContent()
     {
         netGameBtn = transform.Find("GameMode/NetGameBtn").GetComponent<Button>();
-        quitBtn = transform.Find("GameMode/QuitBtn").GetComponent<Button>();
         aiGameBtn = transform.Find("GameMode/AiGameBtn").GetComponent<Button>();
+        quitBtn = transform.Find("GameMode/QuitBtn").GetComponent<Button>();
         settingBtn = transform.Find("SettingBtn").GetComponent<Button>();
         netGameBtn.onClick.AddListener(OnNetGameButtonClicked);
-        quitBtn.onClick.AddListener(OnQuitButtonClicked);
         aiGameBtn.onClick.AddListener(OnAiGameButtonClicked);
+        quitBtn.onClick.AddListener(OnQuitButtonClicked);
         settingBtn.onClick.AddListener(OnSettingsButtonClicked);
     }
 
@@ -39,6 +39,7 @@ public class MainMenuPanel : BasePanel
 
     private void OnAiGameButtonClicked()
     {
+        GameManager.Instance.SetGameMode(GameManager.GameMode.Singleplayer);
         UIManager.Instance.ShowPanel<SinglePlayerSettingPanel>();
         Hide();
     }

@@ -14,6 +14,26 @@
       },
       "url": "https://packages.unity.cn"
     },
+    "com.unity.animation.rigging": {
+      "version": "1.2.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.4.1",
+        "com.unity.test-framework": "1.1.24"
+      },
+      "url": "https://packages.unity.cn"
+    },
+    "com.unity.burst": {
+      "version": "1.8.21",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.mathematics": "1.2.1",
+        "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.cn"
+    },
     "com.unity.collab-proxy": {
       "version": "2.12.4",
       "depth": 0,
@@ -73,15 +93,6 @@
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.cn"
-    },
-    "com.unity.ide.windsurf": {
-      "version": "https://github.com/Asuta/com.unity.ide.windsurf.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.test-framework": "1.1.9"
-      },
-      "hash": "6161accf3e7beab96341813913e714c7e2fb5c5d"
     },
     "com.unity.mathematics": {
       "version": "1.2.6",

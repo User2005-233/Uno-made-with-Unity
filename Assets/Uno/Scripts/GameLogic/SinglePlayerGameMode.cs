@@ -1,13 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-public class SinglePlayerGameMode : MonoBehaviour, IGameMode
+public class SinglePlayerGameMode : IGameMode
 {
 
  #region Variables
 
-    private readonly UnoLogic _logic = new();
-    public List<int> roomPlayerLoop;
+    private readonly UnoLogic _logic = new UnoLogic();
+    public List<int> roomPlayerLoop = new List<int>();
     private bool isGameStart = false;
     private int codeMe = 0;
 
@@ -18,7 +18,7 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
     /// <summary>
     /// Register event listeners
     /// </summary>
-    private void Awake()
+    public SinglePlayerGameMode()
     {
         _logic.gameMode = this;
         AddListeners();
@@ -93,12 +93,14 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
     {
         AddPlayer(number);
         _logic.ShufflePlayerLoop();
+        Init();
         _logic.AddPlayerEntity();
         _logic.DealCards(roomPlayerLoop);
         _logic.StartGame(roomPlayerLoop);
         Debug.Log("Cards dealt");
         Debug.Log("Game started");
         isGameStart = true;
+        _logic.Put1stRandomCard();
     }
 
     /// <summary>
@@ -108,6 +110,7 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
     {
         _logic.Init();
         _logic.InitializeDeck();
+        _logic.InitializePlayerHands(roomPlayerLoop);
         _logic.WashDeck();
     }
 
@@ -132,7 +135,10 @@ public class SinglePlayerGameMode : MonoBehaviour, IGameMode
             if (_logic.TryPlayCard(id, card))
             {
                 CardFunction(card);
+                _logic.CollectCard(card);
                 _logic.UpdateCardInfo(card);
+                _logic.UpdateCardPlayVisual();
+                _logic.CollectCard(card);
                 _logic.NextTurn();
             }
             else

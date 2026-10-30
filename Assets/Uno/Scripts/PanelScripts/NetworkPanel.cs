@@ -18,12 +18,17 @@ public class NetworkPanel : BasePanel
     [SerializeField] Button startclientbtn;
     [SerializeField] TMP_InputField ipaddressinputfield;
     [SerializeField] Button backbtn;
-    [SerializeField] private NetworkManager _networkManager;
+    [SerializeField] private NetManager _networkManager;
 
     public override void InitContent()
     {
+        starthostbtn = transform.Find("GameMode/StartHostBtn").GetComponent<Button>();
+        startserverbtn = transform.Find("GameMode/StartServerBtn").GetComponent<Button>();
+        startclientbtn = transform.Find("GameMode/StartClientBtn").GetComponent<Button>();
+        ipaddressinputfield = transform.Find("GameMode/IPAddressInputField").GetComponent<TMP_InputField>();
+        backbtn = transform.Find("GameMode/BackBtn").GetComponent<Button>();
         starthostbtn.onClick.AddListener(OnStartHost);
-        // startserverbtn.onClick.AddListener(OnStartServer);
+        startserverbtn.onClick.AddListener(OnStartServer);
         startclientbtn.onClick.AddListener(OnStartClient);
         backbtn.onClick.AddListener(OnBack);
     }
@@ -39,6 +44,11 @@ public class NetworkPanel : BasePanel
     void OnStartClient()
     {
         // EventManager.Instance.TriggerEvent<StartClientAction>();
+    }
+    
+    void OnStartServer()
+    {
+        // EventManager.Instance.TriggerEvent<StartServerAction>();
     }
 
     void OnBack(){
