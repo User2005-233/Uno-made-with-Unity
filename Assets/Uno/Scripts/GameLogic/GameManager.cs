@@ -28,12 +28,21 @@ public class GameManager : MonoSingleton<GameManager>
     private Dictionary<int, List<CardInfo>> playerHands = new Dictionary<int, List<CardInfo>>();
     bool isHost = true;
     GameObject PlayerParent;
+    Camera mainCamera;
 
     //all ui assets loading presets
 
     //Players data/setting variables
     public List<int> roomPlayerLoop;
     public List<int> playerLoop;
+    
+    public void HideCamera()
+    {
+        if (mainCamera != null)
+        {
+            mainCamera.gameObject.SetActive(false);
+        }
+    }
 
     #endregion
 
@@ -43,6 +52,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         base.Awake();
         PlayerParent = GameObject.FindWithTag("Player");
+        mainCamera = GameObject.Find("MainCamera").GetComponent<Camera>();
         AddListeners();
         
     }

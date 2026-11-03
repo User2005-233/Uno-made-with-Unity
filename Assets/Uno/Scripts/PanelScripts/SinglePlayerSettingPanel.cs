@@ -30,8 +30,9 @@ public class SinglePlayerSettingPanel : BasePanel
         if (int.TryParse(inputField.text, out int number) && number >= 3 && number <= 6)
         {
             GameManager.Instance.gameMode.StartGame(number);
+            GameManager.Instance.HideCamera();
             UIManager.Instance.ShowPanel<HUDPanel>();
-            UIManager.Instance.HidePanel<SinglePlayerSettingPanel>();
+            Hide();
         }
         else
         {

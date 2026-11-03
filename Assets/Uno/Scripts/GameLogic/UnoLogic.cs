@@ -66,6 +66,7 @@ public class UnoLogic
         {
             foreach (CardColor color in Enum.GetValues(typeof(CardColor)))
             {
+                if(color == CardColor.None) continue;
                 for (int j = 1; j < 10; ++j)
                 {
                     CardInfo info = new(color, CardType.Number, j);
@@ -78,6 +79,7 @@ public class UnoLogic
         // 添加0点卡牌        
         foreach (CardColor color in Enum.GetValues(typeof(CardColor)))
         {
+            if(color == CardColor.None) continue;
             CardInfo info = new(color, CardType.Number, 0);
 
             CardInfoList.Add(info);
@@ -88,9 +90,10 @@ public class UnoLogic
         {
             foreach (CardColor color in Enum.GetValues(typeof(CardColor)))
             {
+                if(color == CardColor.None) continue;
                 foreach (ColorFunc func in Enum.GetValues(typeof(ColorFunc)))
-
                 {
+                    if(func == ColorFunc.None) continue;
                     CardInfo info = new(color, func);
 
                     CardInfoList.Add(info);
@@ -103,6 +106,7 @@ public class UnoLogic
         {
             foreach (WildFunc func in Enum.GetValues(typeof(WildFunc)))
             {
+                if(func == WildFunc.None) continue;
                 CardInfo info = new(func);
 
                 CardInfoList.Add(info);
@@ -145,9 +149,9 @@ public class UnoLogic
             {
                 var card = GetRandomCard();
                 playerHands[code].Add(card);
-                EventManager.Instance.SendMessage(new CardAddEvent(code, card));
             }
         }
+        EventManager.Instance.SendMessage(new CardDealEvent(playerHands));
         return playerHands;
     }
 
@@ -417,7 +421,7 @@ public class UnoLogic
                 1 => CardColor.blue,
                 2 => CardColor.yellow,
                 3 => CardColor.red,
-                _ => CardColor.wild,
+                _ => CardColor.None,
             };
             EventManager.Instance.SendMessage(new WildDrawBackEvent(color));
             return;

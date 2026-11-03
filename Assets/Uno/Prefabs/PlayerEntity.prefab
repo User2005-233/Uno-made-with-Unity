@@ -210,7 +210,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b04a39181ee324c40b4abecba008bb61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isSelf: 0
+  code: 0
+  isTruePlayer: 0
   playerCards: []
 --- !u!1 &5108961043212250877
 GameObject:
@@ -270,6 +271,7 @@ GameObject:
   - component: {fileID: 4873834320497818458}
   - component: {fileID: 184982525505267044}
   - component: {fileID: 2534617207346401343}
+  - component: {fileID: 7819696721330209606}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -351,6 +353,22 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5189732353698079055}
   m_Enabled: 1
+--- !u!114 &7819696721330209606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5189732353698079055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49b4cc203aa6414fae5c798d1d0e7d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_MaxRayIntersections: 0
 --- !u!1001 &8380882857979153638
 PrefabInstance:
   m_ObjectHideFlags: 0

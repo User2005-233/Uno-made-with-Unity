@@ -16,21 +16,20 @@ using DG.Tweening;
 using System;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.EventSystems;
 
 
 public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
 {
-    public CardType cardType;
-    public CardColor cardColor;
-    public int cardNum = -1;
     public CardInfo cardInfo;
-    public bool inMyHand = false;
-    bool onDrag = false;
-    SpriteRenderer spriteRenderer;
-    readonly Color hovered = new Color(0.75f, 0.75f, 0.75f);
+    //can be dragged for local player
+    public bool inTruePlayerHand = false;
+    //is currently being dragged
+    public bool onDrag = false;
+    SpriteRenderer frontRenderer;
+    SpriteRenderer backRenderer;
+    readonly Color hovered = new(0.75f, 0.75f, 0.75f);
     readonly string unoAllSprite = "UNO_ALL.png";
-    readonly StringBuilder sb = new StringBuilder();
+    readonly StringBuilder sb = new();
     Sprite cardSprite = null;
     public GameObject cardVisualPrefab;
     Vector3 position = Vector3.zero;
@@ -42,32 +41,36 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
 
     private void Awake()
     {
-        spriteRenderer = transform.GetComponent<SpriteRenderer>();
+        frontRenderer = transform.Find("front").GetComponent<SpriteRenderer>();
+        backRenderer = transform.Find("back").GetComponent<SpriteRenderer>();
         if (cardSprite != null)
         {
-            spriteRenderer.sprite = cardSprite;
+            frontRenderer.sprite = cardSprite;
         }
     }
 
     #region Card Movement
-    //TODO: implement smooth follow the mouse movement if draged
+    //implement smooth follow the mouse movement if draged
     void Update()
     {
-        if (inMyHand)
+        if(inTruePlayerHand && onDrag)
         {
-            if (onDrag) OnDrag();
-            else OnDragEnd();
+            OnDrag();
+        }
+        else
+        {
+            OnDragEnd();
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        spriteRenderer.color = hovered;
+        frontRenderer.color = hovered;
     }
     
     public void OnPointerExit(PointerEventData eventData)
     {
-        spriteRenderer.color = Color.white;
+        frontRenderer.color = Color.white;
     }
     
     public void OnBeginDrag(PointerEventData eventData)
@@ -84,11 +87,11 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
     }
     public void OnDrag(PointerEventData eventData)
     {
-        spriteRenderer.color = hovered;
+        frontRenderer.color = hovered;
     }
     public void OnDragExit(PointerEventData eventData)
     {
-        spriteRenderer.color = Color.white;
+        frontRenderer.color = Color.white;
     }
     
     
@@ -150,28 +153,24 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
     #region Sprite Code
     public void ColorReset()
     {
-        spriteRenderer.color = Color.white;
+        frontRenderer.color = Color.white;
     }
 
     //multiple set sprite functions
     public void SetProperties(WildFunc func)
     {
         string temp = null;
-
+        sb.Clear();
         sb.Append(unoAllSprite);
 
         switch (func)
         {
             case WildFunc.PlusFour:
-                cardType = CardType.WildDrawFour;
-
                 temp = "[UNO_ALL_54]";
 
                 break;
 
             case WildFunc.Wild:
-                cardType = CardType.Wild;
-
                 temp = "[UNO_ALL_52]";
 
                 break;
@@ -187,7 +186,6 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
     }
     public void SetProperties(ColorFunc func, CardColor color)
     {
-        cardColor = color;
         int spriteIndex = 0;
         switch (color)
         {
@@ -208,34 +206,25 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
         switch (func)
         {
             case ColorFunc.Skip:
-                cardType = CardType.Skip;
                 break;
             case ColorFunc.Reverse:
-                cardType = CardType.Reverse;
                 spriteIndex += 1;
                 break;
             case ColorFunc.PlusTwo:
-                cardType = CardType.PlusTwo;
                 spriteIndex += 2;
                 break;
         }
-
+        sb.Clear();
         sb.Append(unoAllSprite);
         sb.Append("[UNO_ALL_");
         sb.Append(spriteIndex.ToString());
         sb.Append("]");
         string path = sb.ToString();
         Addressables.LoadAssetAsync<Sprite>(path).Completed += Card_Completed;
-        inMyHand = true;
+        inTruePlayerHand = true;
     }
     public void SetProperties(CardColor color, int num)
     {
-        cardType = CardType.Number;
-
-        cardColor = color;
-
-        cardNum = num;
-
         int spriteIndex = 0;
 
         switch (color)
@@ -256,13 +245,14 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
                 break;
         }
         spriteIndex += ((num - 1 + 10) % 10);
+        sb.Clear();
         sb.Append(unoAllSprite);
         sb.Append("[UNO_ALL_");
         sb.Append(spriteIndex.ToString());
         sb.Append("]");
         string path = sb.ToString();
         Addressables.LoadAssetAsync<Sprite>(path).Completed += Card_Completed;
-        inMyHand = true;
+        inTruePlayerHand = true;
     }
 
     // 改变卡牌属性
@@ -270,29 +260,23 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
     {
         cardInfo = info;
 
-        cardType = info.type;
-
-        cardColor = info.color;
-
-        cardNum = info.number;
-
         int spriteIndex = 0;
 
         switch (info.type)
 
         {
             case CardType.Skip:
-                SetProperties(ColorFunc.Skip, cardColor);
+                SetProperties(ColorFunc.Skip, info.color);
 
                 break;
 
             case CardType.Reverse:
-                SetProperties(ColorFunc.Reverse, cardColor);
+                SetProperties(ColorFunc.Reverse, info.color);
 
                 break;
 
             case CardType.PlusTwo:
-                SetProperties(ColorFunc.PlusTwo, cardColor);
+                SetProperties(ColorFunc.PlusTwo, info.color);
 
                 break;
 
@@ -307,13 +291,19 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
                 break;
 
             case CardType.Number:
-                SetProperties(cardColor, cardNum);
+                SetProperties(info.color, info.number);
 
                 break;
 
             default:
                 break;
         }
+    }
+    
+    //be called after card is inserted into hand
+    public void SetContentVisible(bool visible)
+    {
+        backRenderer.enabled = !visible;
     }
 
     #endregion
@@ -330,13 +320,14 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
         rotation = rot;
     }
 
+    //called after the sprite is loaded, set the sprite to the front renderer
     private void Card_Completed(AsyncOperationHandle<Sprite> obj)
     {
         cardSprite = obj.Result;
 
-        if (spriteRenderer != null)
+        if (frontRenderer != null)
         {
-            spriteRenderer.sprite = cardSprite;
+            frontRenderer.sprite = cardSprite;
         }
     }
     

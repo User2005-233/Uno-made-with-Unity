@@ -7,10 +7,10 @@ public class PausePanel : BasePanel
 {
     public override void InitContent()
     {
-        Button resumeBtn = transform.Find("ResumeBtn").GetComponent<Button>();
-        Button restartBtn = transform.Find("RestartBtn").GetComponent<Button>();
-        Button settingBtn = transform.Find("SettingBtn").GetComponent<Button>();
-        Button exitBtn = transform.Find("ExitBtn").GetComponent<Button>();
+        Button resumeBtn = transform.Find("panel/ResumeBtn").GetComponent<Button>();
+        Button restartBtn = transform.Find("panel/RestartBtn").GetComponent<Button>();
+        Button settingBtn = transform.Find("panel/SettingBtn").GetComponent<Button>();
+        Button exitBtn = transform.Find("panel/ExitGameBtn").GetComponent<Button>();
         resumeBtn.onClick.AddListener(onResumeBtnClick);
         restartBtn.onClick.AddListener(onRestartBtnClick);
         settingBtn.onClick.AddListener(onSettingBtnClick);

@@ -20,7 +20,7 @@ public class HandCardManager : MonoBehaviour
     List<Card> handCard = new List<Card>();
     List<Vector3> cardPositions = new List<Vector3>();
     List<Vector3> cardRotations = new List<Vector3>();
-    Card selected;
+    public Card selected;
     SplineContainer handSpline;
     [SerializeField] float initalSpace = 1f;
     int PlayerCode = 0;
@@ -60,7 +60,9 @@ public class HandCardManager : MonoBehaviour
     public void InsertHandCard(Card card)
     {
         handCard.Add(card);
-        card.transform.parent = handSpline.transform;
+        card.transform.SetParent(handSpline.transform, false);
+        card.manager = this;
+        card.SetContentVisible(card.inTruePlayerHand);
         Debug.Log("Card Received!");
         UpdateCardTransform();
         SortCardsAndPositions(handCard);
@@ -75,6 +77,7 @@ public class HandCardManager : MonoBehaviour
 
 
     //temp function: update all transform settings
+    //give each card a position and rotation based on the spline, and they go to their own position with a smooth animation
     void UpdateCardTransform()
     {
         if (handCard.Count == 0) return;
@@ -96,12 +99,12 @@ public class HandCardManager : MonoBehaviour
 
     public void SortCardsAndPositions(List<Card> cardList)
     {
-        if (cardList == null || cardList.Count <= 1) return;
+        if (cardList == null || cardList.Count == 0) return;
 
         // 2. 使用 LINQ 进行多级排序（这里以 先按颜色、再按类型、最后按数字 排序为例）
         List<Card> sortedList = cardList
-            .OrderBy(c => c.cardInfo.color)
-            .ThenBy(c => c.cardInfo.type)
+            .OrderBy(c => GetColorOrder(c.cardInfo.color))
+            .ThenBy(c => GetTypeOrder(c.cardInfo.type))
             .ThenBy(c => c.cardInfo.number)
             .ToList();
 
@@ -115,6 +118,32 @@ public class HandCardManager : MonoBehaviour
         // 4. 将原本的 List 内容更新为排序后的结果
         cardList.Clear();
         cardList.AddRange(sortedList);
+    }
+    
+    private static int GetColorOrder(CardColor color)
+    {
+        return color switch
+        {
+            CardColor.red => 1,
+            CardColor.yellow => 2,
+            CardColor.green => 3,
+            CardColor.blue => 4,
+            _ => 0 // 万能牌最后
+        };
+    }
+
+    private static int GetTypeOrder(CardType type)
+    {
+        return type switch
+        {
+            CardType.Number => 0,
+            CardType.Skip => 1,
+            CardType.Reverse => 2,
+            CardType.PlusTwo => 3,
+            CardType.Wild => 4,
+            CardType.WildDrawFour => 5,
+            _ => 6
+        };
     }
     
     

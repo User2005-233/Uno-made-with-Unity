@@ -23,7 +23,6 @@ public enum CardColor
     blue=2,
     yellow=3,
     red=4,
-    wild=5,
 }
 
 public enum WildFunc
@@ -141,7 +140,7 @@ public class CardInfo
         return false;
     }
 
-    public int GetCardID()
+    public int GetCardCode()
     {
         return (int)color * 100 + (int)type * 10 + number;
     }
